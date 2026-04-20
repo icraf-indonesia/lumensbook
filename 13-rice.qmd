@@ -1,35 +1,182 @@
+---
+title: "Rice Agriculture (CSA Module)"
+format: 
+  html:
+    toc: true
+    number-sections: true
+---
+
 # Rice Agriculture {#sec-rice}
 
 ## Description
+
+The **QuES-C Rice Agriculture module** is part of the Climate-Smart Agriculture (CSA) framework used to estimate greenhouse gas (GHG) emissions from rice-based agricultural systems.
+
+This module focuses on:
+
+- Methane (CH₄) emissions from flooded paddy fields  
+- Nitrous Oxide (N₂O) emissions from fertilizer application  
+
+The analysis integrates spatial data (land cover and planning units) with emission-related lookup tables to generate both tabular and spatial outputs.
+
+---
 
 ## Usage
 
 ### Workflow
 
-### Step-by step instructions
+The module workflow consists of three main stages:
+
+1. Data preparation  
+2. Data upload and configuration  
+3. Emission calculation and report generation  
+
+---
+
+### Step-by-step Instructions
+
+1. Prepare input datasets:
+   - Land Cover raster  
+   - Planning Unit (raster or shapefile)  
+   - Required lookup tables  
+
+2. Upload data into the application:
+   - Select planning unit type  
+   - Upload all required files  
+
+3. Configure parameters:
+   - Define analysis year  
+   - Select output directory  
+
+4. Run analysis:
+   - Click **Run Analysis**  
+   - Wait for processing to complete  
+
+5. Review outputs:
+   - Tables  
+   - Charts  
+   - Maps  
+   - HTML report  
+
+---
 
 ### Tips
+
+- Ensure all raster inputs have the same CRS and resolution  
+- Verify lookup table structure before uploading  
+- Use smaller datasets for testing before running full analysis  
+- Check output directory permissions  
+
+---
 
 ## Data Requirements
 
 ### Input Data and Parameters
 
+| Data | Format | Description |
+|------|--------|------------|
+| Land Cover | TIFF | Land use classification |
+| Planning Unit | TIFF / SHP | Spatial analysis zones |
+| Lookup LC | CSV | Land cover classification |
+| CO₂ Lookup | CSV | Emission and GWP factors |
+| Scaling Factor | CSV | CH₄ adjustment parameters |
+| Fertilizer | CSV | Nitrogen input data |
+| N₂O Lookup | CSV | N₂O conversion factors |
+
+---
+
 ### Example Datasets
 
-### Data Acquistion
+Example datasets may include:
+
+- National land cover maps  
+- Administrative boundaries as planning units  
+- Default emission factor tables  
+
+---
+
+### Data Acquisition
+
+Input data can be obtained from:
+
+- National geospatial agencies  
+- Agricultural statistics agencies  
+- IPCC guideline datasets  
+- Project-specific field data  
+
+---
 
 ## Outputs
 
 ### Output Files
 
+The module generates:
+
+- Emission tables (CH₄ and N₂O)  
+- Summary tables per planning unit  
+- Interactive charts  
+- Spatial maps  
+- HTML report  
+
+---
+
 ### Report Interpretation
+
+**Emission Tables**
+
+- Show total emissions per planning unit  
+- Useful for identifying high-emission areas  
+
+**Emission Charts**
+
+- Display CH₄ vs N₂O contribution  
+- Support comparison across regions  
+
+**Spatial Maps**
+
+- Show distribution of paddy areas  
+- Validate spatial input consistency  
+
+**Paddy Area Charts**
+
+- Compare paddy vs non-paddy areas per PU  
+
+---
 
 ## Theoretical Background
 
 ### Model Description
 
+The model estimates emissions using spatial overlays and emission factors.
+
+**CH₄ Emission:**
+CH₄ = EF × SF × Area × Time
+
+**N₂O Emission:**
+Derived from nitrogen input and conversion factors.
+
+Both gases are converted into CO₂-equivalent using Global Warming Potential (GWP).
+
+---
+
 ### Key Assumptions
+
+- Emissions occur only in agricultural (paddy) areas  
+- Emission factors are constant  
+- Spatial inputs are accurate and aligned  
+
+---
 
 ### Limitations
 
+- Results depend on input data quality  
+- Does not account for temporal dynamics  
+- Simplified emission factors may not capture local variability  
+
+---
+
 ## References
+
+- IPCC Guidelines for National Greenhouse Gas Inventories  
+- FAO Climate-Smart Agriculture Framework  
+- CIFOR-ICRAF LUMENS documentation  
