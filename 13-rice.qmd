@@ -1,0 +1,35 @@
+# Rice Agriculture {#sec-rice}
+
+## Description
+
+## Usage
+
+### Workflow
+
+### Step-by step instructions
+
+### Tips
+
+## Data Requirements
+
+### Input Data and Parameters
+
+### Example Datasets
+
+### Data Acquistion
+
+## Outputs
+
+### Output Files
+
+### Report Interpretation
+
+## Theoretical Background
+
+### Model Description
+
+### Key Assumptions
+
+### Limitations
+
+## References
