@@ -3,64 +3,269 @@ title: "Rice Agriculture (CSA Module)"
 format: 
   html:
     toc: true
-    number-sections: true
+    # number-sections: true
 ---
 
-# Rice Agriculture {#sec-rice}
+```{r setup, warning= FALSE, echo=FALSE, message=FALSE}
+library(dplyr)
+library(scales)
+library(ggplot2)
+library(terra)
+library(readr)
 
-## Description
+no_decimal <- label_number(
+  accuracy = 1,
+  big.mark = ",",
+  decimal.mark = "."
+)
 
-The **QuES-C Rice Agriculture module** is part of the Climate-Smart Agriculture (CSA) framework used to estimate greenhouse gas (GHG) emissions from rice-based agricultural systems.
+fill_scale <- ggplot2::scale_fill_manual(
+  values = c(
+    "#4E79A7", "#F28E2B", "#E15759", "#76B7B2", "#59A14F",
+    "#EDC948", "#B07AA1", "#FF9DA7", "#9C755F", "#BAB0AC",
+    "#86BCB6", "#FFB84D", "#A5C1DC", "#D37295", "#C4AD66",
+    "#7B8D8E", "#B17B62", "#8CD17D", "#DE9D9C", "#5A5A5A",
+    "#A0A0A0", "#D7B5A6", "#6D9EEB", "#E69F00", "#56B4E9",
+    "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7",
+    "#999999", "#E51E10", "#FF7F00", "#FFFF33", "#A65628",
+    "#F781BF", "#999933", "#8DD3C7", "#FFFFB3", "#BEBADA",
+    "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+    "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F", "#E41A1C"
+  ),
+  na.value = "white",
+  name = "Tutupan Lahan",
+  labels = function(x) stringr::str_wrap(x, width = 20)
+)
+```
 
-This module focuses on:
+# Overview
+
+The Quantification of Ecosystem Services – Carbon (QuES-C) Rice Agriculture module is part of the LUMENS framework designed to estimate greenhouse gas (GHG) emissions from rice-based agricultural systems.
+
+This module focuses on quantifying:
 
 - Methane (CH₄) emissions from flooded paddy fields  
-- Nitrous Oxide (N₂O) emissions from fertilizer application  
+- Nitrous oxide (N₂O) emissions associated with nitrogen fertilizer application  
 
-The analysis integrates spatial data (land cover and planning units) with emission-related lookup tables to generate both tabular and spatial outputs.
+The methodological approach is aligned with the IPCC Guidelines for National Greenhouse Gas Inventories (2006), particularly Volume 4: Agriculture, Forestry and Other Land Use (AFOLU), which provides standardized methods for estimating emissions from agricultural activities.  
+For more details, see: <https://www.ipcc-nggip.iges.or.jp/public/2006gl/vol4.html>
+
+The module integrates spatial datasets (land cover and planning units) with emission factor lookup tables to produce consistent and spatially explicit estimates of GHG emissions.
+
+For a given location (pixel or planning unit), the analysis provides answers to:
+
+- How much CH₄ and N₂O emissions are generated from rice cultivation?  
+- Which planning units contribute the most to total emissions?  
+- How are emissions spatially distributed across the landscape?  
+
+The results are presented in the form of:
+
+- Emission tables per planning unit  
+- Comparative charts (CH₄ vs N₂O)  
+- Spatial distribution maps of paddy areas  
+- Integrated HTML reports  
+
+This module supports decision-making processes related to climate-smart agriculture, land management, and emission mitigation strategies in the agricultural sector.
+
+## Key Questions
+
+For a given location (pixel or planning unit), the module can answer:
+
+- How much CH4 and N2O emissions are generated from rice cultivation?  
+- Which planning units contribute the most to total emissions?  
+- How do agricultural practices influence emission levels?  
+- What is the spatial distribution of paddy fields and emissions?  
 
 ---
 
-## Usage
+# Usage
 
-### Workflow
+## Workflow
 
 The module workflow consists of three main stages:
 
-1. Data preparation  
-2. Data upload and configuration  
-3. Emission calculation and report generation  
+1. Data preparation. In this step, users prepare the necessary data, noting the correct input specifications.
+2. Upload data. Once all the data has been prepared, users input the data by clicking Browse or manually dragging the input data to the correct attribute.
+3. Analyze results. Upon completion, the user will find the analysis results in the module or directly in the output folder.
+
+## Step-by-step Instructions
+
+### Step 1: Data Preparation
+
+#### Land Cover Map
+```{r warning= FALSE, echo=FALSE, message=FALSE}
+lc_raster <- rast("images/CSA/lc_2020.tif")
+lookup_lc <- read_csv("images/CSA/tabel_acuan_penutupan_lahan_sulsel.csv")
+
+name_rast <- names(lc_raster)
+levels(lc_raster) <- lookup_lc
+lc_raster <- setNames(lc_raster, name_rast)
+
+lc_map <- ggplot() +
+  tidyterra::geom_spatraster(data = lc_raster) +
+  fill_scale +
+  guides(fill = guide_legend(ncol = 2, byrow = TRUE)) + 
+  theme_bw() +
+  theme(
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    legend.title = element_text(size = 8, face = "bold"),
+    legend.text = element_text(size = 6),
+    legend.key.height = unit(0.5, "cm"),
+    legend.key.width = unit(0.4, "cm"),
+    legend.position = "right",
+    legend.justification = c(0, 0.5),
+    legend.box.margin = margin(0, 0, 0, 0),
+    legend.background = element_rect(fill = "lightgrey"),
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+lc_map
+```
+
+#### Land Cover Lookup Table
+
+| ID | LC                                                     | paddy |
+|---:|--------------------------------------------------------|------:|
+| 0  | No data                                                | 0     |
+| 1  | Hutan                                                  | 0     |
+| 2  | Perkebunan                                             | 0     |
+| 3  | Agroforestri                                           | 0     |
+| 4  | Belukar, padang rumput, dan lahan terbuka              | 0     |
+| 5  | Pertanian                                              | 1     |
+| 6  | Pemukiman                                              | 0     |
+| 7  | Badan air                                              | 0     |
+
+#### Planning Unit Map
+```{r warning= FALSE, echo=FALSE, message=FALSE}
+pu_raster <- rast("images/CSA/admin_kabupaten.tif")
+lookup_pu <- read_csv("images/CSA/tabel_acuan_administrasi_kabupaten_sulsel.csv")
+
+name_rast <- names(pu_raster)
+levels(pu_raster) <- lookup_pu
+pu_raster <- setNames(pu_raster, name_rast)
+
+pu_map <- ggplot() +
+  tidyterra::geom_spatraster(data = pu_raster) +
+  fill_scale +
+  guides(fill = guide_legend(ncol = 2, byrow = TRUE)) + 
+  theme_bw() +
+  theme(
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    legend.title = element_text(size = 8, face = "bold"),
+    legend.text = element_text(size = 6),
+    legend.key.height = unit(0.5, "cm"),
+    legend.key.width = unit(0.4, "cm"),
+    legend.position = "right",
+    legend.justification = c(0, 0.5),
+    legend.box.margin = margin(0, 0, 0, 0),
+    legend.background = element_rect(fill = "lightgrey"),
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+pu_map
+```
+
+#### Scaling Factors Lookup Table
+
+This table contains parameters used to adjust methane emissions based on environmental and management conditions.
+
+| ID | Name                             | Variable | Value |
+|---:|----------------------------------|----------|------:|
+| 1  | Emission Factor                  | EF       | 1.61  |
+| 2  | Scaling Factor Water Regime      | SFw      | 1     |
+| 3  | Scaling Factor Soil Type         | SFs      | 1     |
+| 4  | Scaling Factor Rice Variety      | SFr      | 1     |
+| 5  | Cultivation Period               | t        | 240   |
+
+Description:
+
+- EF: Base methane emission factor
+- SF*: Adjustment factors for specific conditions
+- t: Duration of cultivation period (days)
+
+#### Fertilizer Application Lookup Table
+
+This table provides spatially explicit fertilizer application rates by administrative unit.
+
+| KABUPATEN         | KECAMATAN       | PT_UREA | PT_SP36 | PT_KCl | PM_NPK_151012 | PM_UREA |
+|-------------------|----------------|--------:|--------:|-------:|--------------:|--------:|
+| KEPULAUAN SELAYAR | PASIMARANNU    | 250     | 50      | 50     | 250           | 175     |
+| KEPULAUAN SELAYAR | PASILAMBENA    | 300     | 75      | 50     | 300           | 200     |
+| BULUKUMBA         | GANTORANG      | 250     | 50      | 50     | 250           | 175     |
+
+Description:
+
+- Each row represents a district-level fertilizer recommendation
+- Values are typically expressed in kg/ha
+- Used to estimate nitrogen input for N₂O emission calculation
+
+#### N₂O Conversion Lookup Table
+
+This table contains conversion coefficients related to fertilizer application and cropping intensity
+
+| Variable               | Value  |
+|------------------------|-------:|
+| 100% fertilizer dose   | 0.0336 |
+| 50% fertilizer dose    | 0.9025 |
+| 0% fertilizer dose     | 0.0639 |
+| Single rice rotation   | 173243 |
+| 2–3 rice rotations     | 403316 |
+| No rice cultivation    | 15635  |
+| N Urea                 | 0.46   |
+| N NPK 15-10-12         | 0.15   |
+
+Description:
+
+- Fertilizer dose coefficients affect emission magnitude
+- Rotation values represent cropping intensity impacts
+- Nitrogen content values are used to estimate N input
+
+#### CO₂ Conversion Lookup Table
+
+This table defines Global Warming Potential (GWP) values and emission factors used to convert emissions into CO₂-equivalent.
+
+| Variable | Value |
+|----------|------:|
+| GWP_CO2  | 1     |
+| GWP_CH4  | 27.2  |
+| GWP_N2O  | 273   |
+| EF_N2O   | 0.003 |
+| EF_CO2   | 0.2   |
+
+Description:
+
+- GWP_*: Global warming potential factors
+- EF_*: Emission factors used in calculations
+
+### Step 2: Uploading Data and Configuring Parameters
+
+1. Users will begin by uploading all required datasets into the application. Select the planning unit type to define the spatial boundary of the analysis. This can be provided as either a raster dataset or a vector dataset (e.g., shapefile).
+
+2. Upload the land cover raster by clicking Browse. Once selected, press Select, and a progress bar will appear indicating that the upload is complete.
+
+3. Upload the planning unit dataset. After selecting the file, press Select, and wait until the progress bar confirms completion.
+
+4. Upload all required lookup tables, including land cover classification, CO₂ conversion factors, scaling factors, fertilizer data, and N₂O parameters. Each upload will display a progress bar indicating successful completion.
+
+5. Define the analysis year by entering the desired reference year for the assessment.
+
+6. Choose the output directory by clicking Browse, then press Select. The selected directory will be displayed in the bar below.
+
+Once all inputs and parameters are properly configured, the system is ready to proceed to the analysis stage.
+
+### Step 3: Analyze Results
+
+After all required data and parameters have been successfully configured, users can proceed to run the analysis.
+
+Click the Run Analysis button to start the computation process. The system will begin processing the uploaded datasets, including spatial overlay, emission calculations, and aggregation per planning unit. A progress indicator will appear to show the status of the analysis. Processing time may vary depending on the size and resolution of the input data. Once the analysis is complete, a notification will appear indicating that the process has finished successfully.
+
+Users can then proceed to review the generated outputs, including tables, charts, maps, and the HTML report.
 
 ---
 
-### Step-by-step Instructions
-
-1. Prepare input datasets:
-   - Land Cover raster  
-   - Planning Unit (raster or shapefile)  
-   - Required lookup tables  
-
-2. Upload data into the application:
-   - Select planning unit type  
-   - Upload all required files  
-
-3. Configure parameters:
-   - Define analysis year  
-   - Select output directory  
-
-4. Run analysis:
-   - Click **Run Analysis**  
-   - Wait for processing to complete  
-
-5. Review outputs:
-   - Tables  
-   - Charts  
-   - Maps  
-   - HTML report  
-
----
-
-### Tips
+## Tips
 
 - Ensure all raster inputs have the same CRS and resolution  
 - Verify lookup table structure before uploading  
@@ -69,9 +274,9 @@ The module workflow consists of three main stages:
 
 ---
 
-## Data Requirements
+# Data Requirements
 
-### Input Data and Parameters
+## Input Data and Parameters
 
 | Data | Format | Description |
 |------|--------|------------|
@@ -83,19 +288,11 @@ The module workflow consists of three main stages:
 | Fertilizer | CSV | Nitrogen input data |
 | N₂O Lookup | CSV | N₂O conversion factors |
 
----
+## Example Datasets
 
-### Example Datasets
+Practice data sets used in this module can be accessed at <https://www.ipcc-nggip.iges.or.jp/public/2006gl/vol4.html>
 
-Example datasets may include:
-
-- National land cover maps  
-- Administrative boundaries as planning units  
-- Default emission factor tables  
-
----
-
-### Data Acquisition
+## Data Acquisition
 
 Input data can be obtained from:
 
@@ -106,46 +303,71 @@ Input data can be obtained from:
 
 ---
 
-## Outputs
+# Outputs
 
-### Output Files
+## Report Interpretation
 
-The module generates:
+The analysis results are presented in several sections consisting of maps, tables, and charts. Each output provides complementary information to support interpretation of rice agriculture distribution and associated greenhouse gas emissions.
 
-- Emission tables (CH₄ and N₂O)  
-- Summary tables per planning unit  
-- Interactive charts  
-- Spatial maps  
-- HTML report  
+### Paddy Distribution Map
+
+This map shows the spatial distribution of paddy and non-paddy areas.
+
+Paddy areas are the main contributors to CH₄ emissions due to anaerobic soil conditions in flooded fields. The spatial distribution helps identify clusters of agricultural activity and potential emission hotspots.
+
+### Paddy Area Chart
+
+The chart compares the extent of paddy and non-paddy areas across planning units.
+
+Planning units with larger paddy areas generally contribute more to total emissions, particularly CH₄. This visualization helps identify regions with higher agricultural intensity.
+
+### CH₄ Emission Table
+
+This table presents estimated methane (CH₄) emissions for each planning unit.
+
+CH₄ emissions are calculated based on:
+
+- Paddy area extent
+- Emission factors
+- Scaling factors (water regime, soil, etc.)
+- Cultivation period
+
+Higher CH₄ emissions are typically associated with larger and continuously flooded paddy areas.
+
+### N₂O Emission Table
+
+This table shows nitrous oxide (N₂O) emissions under different fertilization and cropping scenarios.
+
+Unlike CH₄, N₂O emissions are more sensitive to:
+
+- Fertilizer type and dosage
+- Nitrogen content
+- Cropping frequency
+
+Variations across scenarios highlight the potential impact of improved fertilizer management on emission reduction.
+
+### Emission Summary Table
+
+The summary table combines CH₄ and N₂O emissions into total emissions expressed in CO₂-equivalent.
+
+This provides an overall view of greenhouse gas contributions from rice agriculture per planning unit and allows identification of priority areas for mitigation.
+
+### Emission Chart
+
+The emission chart visualizes the contribution of CH₄ and N₂O across planning units.
+
+In most cases:
+
+- CH₄ dominates total emissions from paddy fields
+- N₂O contributes a smaller but significant portion depending on fertilization practices
+
+This comparison helps users understand the relative importance of different emission sources.
 
 ---
 
-### Report Interpretation
+# Theoretical Background
 
-**Emission Tables**
-
-- Show total emissions per planning unit  
-- Useful for identifying high-emission areas  
-
-**Emission Charts**
-
-- Display CH₄ vs N₂O contribution  
-- Support comparison across regions  
-
-**Spatial Maps**
-
-- Show distribution of paddy areas  
-- Validate spatial input consistency  
-
-**Paddy Area Charts**
-
-- Compare paddy vs non-paddy areas per PU  
-
----
-
-## Theoretical Background
-
-### Model Description
+## Model Description
 
 The model estimates emissions using spatial overlays and emission factors.
 
@@ -157,17 +379,13 @@ Derived from nitrogen input and conversion factors.
 
 Both gases are converted into CO₂-equivalent using Global Warming Potential (GWP).
 
----
-
-### Key Assumptions
+## Key Assumptions
 
 - Emissions occur only in agricultural (paddy) areas  
 - Emission factors are constant  
 - Spatial inputs are accurate and aligned  
 
----
-
-### Limitations
+## Limitations
 
 - Results depend on input data quality  
 - Does not account for temporal dynamics  
@@ -175,7 +393,7 @@ Both gases are converted into CO₂-equivalent using Global Warming Potential (G
 
 ---
 
-## References
+# References
 
 - IPCC Guidelines for National Greenhouse Gas Inventories  
 - FAO Climate-Smart Agriculture Framework  
