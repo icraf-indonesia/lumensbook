@@ -1,0 +1,406 @@
+# Modul Emisi Lahan Pertanian (CSA) {#sec-lasem}
+
+---
+editor: visual
+format: 
+  html:
+    toc: true
+    # number-sections: true
+---
+
+```{r setup, warning= FALSE, echo=FALSE, message=FALSE}
+library(dplyr)
+library(scales)
+library(ggplot2)
+library(terra)
+library(readr)
+
+no_decimal <- label_number(
+  accuracy = 1,
+  big.mark = ",",
+  decimal.mark = "."
+)
+
+fill_scale <- ggplot2::scale_fill_manual(
+  values = c(
+    "#4E79A7", "#F28E2B", "#E15759", "#76B7B2", "#59A14F",
+    "#EDC948", "#B07AA1", "#FF9DA7", "#9C755F", "#BAB0AC",
+    "#86BCB6", "#FFB84D", "#A5C1DC", "#D37295", "#C4AD66",
+    "#7B8D8E", "#B17B62", "#8CD17D", "#DE9D9C", "#5A5A5A",
+    "#A0A0A0", "#D7B5A6", "#6D9EEB", "#E69F00", "#56B4E9",
+    "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7",
+    "#999999", "#E51E10", "#FF7F00", "#FFFF33", "#A65628",
+    "#F781BF", "#999933", "#8DD3C7", "#FFFFB3", "#BEBADA",
+    "#FB8072", "#80B1D3", "#FDB462", "#B3DE69", "#FCCDE5",
+    "#D9D9D9", "#BC80BD", "#CCEBC5", "#FFED6F", "#E41A1C"
+  ),
+  na.value = "white",
+  name = "Tutupan Lahan",
+  labels = function(x) stringr::str_wrap(x, width = 20)
+)
+```
+
+# Gambaran Umum
+
+Modul Emisi Karbon Lahan Pertanian dikembangkan untuk mengestimasi emisi gas rumah kaca (GRK) dari sistem budidaya pertanian berbasis data spasial. Fokus utama modul ini adalah lahan sawah, karena sistem budidaya padi sawah merupakan salah satu sumber utama emisi **metana (CH₄)** dan **dinitrogen oksida (N₂O)** di sektor pertanian.\
+\
+Emisi CH₄ terutama dihasilkan pada kondisi tanah tergenang (anaerob), di mana dekomposisi bahan organik oleh mikroorganisme menghasilkan gas metana. Sementara itu, emisi N₂O berasal dari proses nitrifikasi dan denitrifikasi yang dipicu oleh ketersediaan nitrogen dalam tanah, khususnya dari pemupukan.\
+\
+Modul ini mengintegrasikan:\
+- Peta tutupan lahan\
+- Peta unit perencanaan\
+- Tabel parameter emisi dan konversi\
+- Data dosis pupuk\
+\
+untuk menghasilkan estimasi emisi dalam bentuk tabel, grafik, dan peta.\
+\
+Pendekatan yang digunakan mengacu pada metodologi \*\*IPCC Tier 2\*\*, yang memanfaatkan faktor emisi dan parameter yang lebih spesifik dibandingkan nilai default global, sehingga hasil estimasi lebih representatif terhadap kondisi lokal.
+
+## Pertanyaan Kunci
+
+-   Berapa total emisi **CH₄ dan N₂O** dari lahan sawah?
+-   Unit perencanaan mana yang menjadi **kontributor terbesar emisi**?
+-   Bagaimana **praktik budidaya** mempengaruhi tingkat emisi?
+-   Di mana lokasi **hotspot emisi** secara spasial?
+
+# Penggunaan
+
+## Alur Kerja
+
+Alur kerja modul terdiri dari tiga tahapan utama:
+
+1.  **Persiapan Data**\
+    Pada tahap ini, pengguna menyiapkan seluruh data yang diperlukan sesuai dengan spesifikasi input yang telah ditentukan (format file, struktur tabel, dan sistem koordinat).
+
+2.  **Unggah Data**\
+    Setelah data siap, pengguna mengunggah data ke dalam modul melalui tombol *Browse* atau dengan metode *drag-and-drop* ke atribut input yang sesuai.
+
+3.  **Analisis dan Output**\
+    Setelah proses analisis dijalankan, hasil akan ditampilkan langsung pada modul (tabel, grafik, dan peta), serta tersimpan pada direktori keluaran (*output folder*) yang telah ditentukan.
+
+## Langkah Penggunaan
+
+### Langkah 1: Persiapan Data
+
+#### Peta Tutupan Lahan
+
+```{r warning= FALSE, echo=FALSE, message=FALSE}
+lc_raster <- rast("images/CSA/lc_2020.tif")
+lookup_lc <- read_csv("images/CSA/tabel_acuan_penutupan_lahan_sulsel.csv")
+
+name_rast <- names(lc_raster)
+levels(lc_raster) <- lookup_lc
+lc_raster <- setNames(lc_raster, name_rast)
+
+lc_map <- ggplot() +
+  tidyterra::geom_spatraster(data = lc_raster) +
+  fill_scale +
+  guides(fill = guide_legend(ncol = 2, byrow = TRUE)) + 
+  theme_bw() +
+  theme(
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    legend.title = element_text(size = 8, face = "bold"),
+    legend.text = element_text(size = 6),
+    legend.key.height = unit(0.5, "cm"),
+    legend.key.width = unit(0.4, "cm"),
+    legend.position = "right",
+    legend.justification = c(0, 0.5),
+    legend.box.margin = margin(0, 0, 0, 0),
+    legend.background = element_rect(fill = "lightgrey"),
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+lc_map
+```
+
+#### Tabel Acuan Tutupan Lahan
+
+|  ID | Tutupan Lahan                             | paddy |
+|----:|-------------------------------------------|------:|
+|   1 | Hutan                                     |     0 |
+|   2 | Perkebunan                                |     0 |
+|   3 | Agroforestri                              |     0 |
+|   4 | Belukar, padang rumput, dan lahan terbuka |     0 |
+|   5 | Pertanian                                 |     1 |
+|   6 | Pemukiman                                 |     0 |
+|   7 | Badan air                                 |     0 |
+
+#### Peta Unit Perencanaan
+
+```{r warning= FALSE, echo=FALSE, message=FALSE}
+pu_raster <- rast("images/CSA/admin_kabupaten.tif")
+lookup_pu <- read_csv("images/CSA/tabel_acuan_administrasi_kabupaten_sulsel.csv")
+
+name_rast <- names(pu_raster)
+levels(pu_raster) <- lookup_pu
+pu_raster <- setNames(pu_raster, name_rast)
+
+pu_map <- ggplot() +
+  tidyterra::geom_spatraster(data = pu_raster) +
+  fill_scale +
+  guides(fill = guide_legend(ncol = 2, byrow = TRUE)) + 
+  theme_bw() +
+  theme(
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    legend.title = element_text(size = 8, face = "bold"),
+    legend.text = element_text(size = 6),
+    legend.key.height = unit(0.5, "cm"),
+    legend.key.width = unit(0.4, "cm"),
+    legend.position = "right",
+    legend.justification = c(0, 0.5),
+    legend.box.margin = margin(0, 0, 0, 0),
+    legend.background = element_rect(fill = "lightgrey"),
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
+pu_map
+```
+
+#### Tabel Acuan Faktor Skala
+
+Tabel ini berisi parameter yang digunakan untuk menyesuaikan estimasi emisi metana (CH₄) berdasarkan kondisi lingkungan dan praktik pengelolaan lahan.
+
+|  ID | Name                        | Variable | Value |
+|----:|-----------------------------|----------|------:|
+|   1 | Emission Factor             | EF       |  1.61 |
+|   2 | Scaling Factor Water Regime | SFw      |     1 |
+|   3 | Scaling Factor Soil Type    | SFs      |     1 |
+|   4 | Scaling Factor Rice Variety | SFr      |     1 |
+|   5 | Cultivation Period          | t        |   240 |
+
+Deskripsi:
+
+-   $EF_c$: Faktor emisi *baseline* untuk padi sawah dengan irigasi terus-menerus dan tanpa pengembalian bahan organik. Menggunakan Tier 2 yaitu $1,61\ kg\ ha^{-1}\ hari^{-1}$.
+
+-   $SF_w$: Faktor skala untuk berbagai tipe pengairan. Faktor skala pengairan irigasi dengan penggenangan terus-menerus adalah 1 (satu).
+
+-   $SF_s$ Faktor skala untuk jenis tanah (*soil type*) yang merepresentasikan pengaruh karakteristik tanah terhadap emisi $CH_4$. Faktor ini mencerminkan kondisi biofisik tanah seperti tekstur, kandungan bahan organik, dan kondisi redoks yang memengaruhi aktivitas mikroorganisme penghasil metana.
+
+-   $SF_r$: Faktor skala untuk varietas padi (*rice variety*) yang digunakan. Faktor ini memperhitungkan perbedaan emisi $CH_4$ akibat karakteristik varietas, seperti sistem perakaran dan kemampuan tanaman dalam mentransfer gas dari tanah ke atmosfer.
+
+-   $t_{ijk}$: Periode atau durasi tanam pada kondisi tertentu (hari).
+
+#### Tabel Acuan Dosis Pupuk
+
+| KABUPATEN         | PT_UREA | PT_SP36 | PT_KCl | PM_NPK_151012 | PM_UREA |
+|-------------------|--------:|--------:|-------:|--------------:|--------:|
+| KEPULAUAN SELAYAR |     250 |      50 |     50 |           250 |     175 |
+| BULUKUMBA         |     250 |      50 |     50 |           250 |     175 |
+
+#### Tabel Acuan Konversi N₂O
+
+| Variable             |  Value |
+|----------------------|-------:|
+| 100% fertilizer dose | 0.0336 |
+| 50% fertilizer dose  | 0.9025 |
+| 0% fertilizer dose   | 0.0639 |
+| Single rice rotation | 173243 |
+| 2–3 rice rotations   | 403316 |
+| No rice cultivation  |  15635 |
+| N Urea               |   0.46 |
+| N NPK 15-10-12       |   0.15 |
+
+#### Tabel Acuan Konversi CO₂
+
+| Variable | Value |
+|----------|------:|
+| GWP_CO2  |     1 |
+| GWP_CH4  |  27.2 |
+| GWP_N2O  |   273 |
+| EF_N2O   | 0.003 |
+| EF_CO2   |   0.2 |
+
+### Langkah 2: Unggah Data dan Konfigurasi Parameter
+
+1.   Pengguna memulai dengan mengunggah seluruh data yang diperlukan ke dalam aplikasi. Pilih tipe unit perencanaan sebagai batas spasial analisis. Data ini dapat berupa raster maupun vektor (misalnya *shapefile*), tergantung pada ketersediaan data.
+
+2.   Unggah data tutupan/penggunaan lahan (LULC) dalam format raster dengan menekan tombol **Browse**, kemudian klik **Select**. Progress bar akan muncul sebagai indikator bahwa proses unggah telah berhasil.
+
+3.   Unggah data unit perencanaan. Setelah file dipilih, klik **Select** dan tunggu hingga progress bar menunjukkan bahwa proses unggah telah selesai.
+
+4.   Unggah seluruh tabel referensi (*lookup tables*) yang dibutuhkan, meliputi: klasifikasi tutupan lahan, faktor konversi emisi (misalnya untuk CH₄ dan CO₂-eq), faktor skala (misalnya pengairan, jenis tanah, varietas), data dosis pemupukan, dan parameter perhitungan emisi N₂O. Setiap proses unggah akan ditandai dengan progress bar sebagai indikator keberhasilan.
+
+5.   Tentukan tahun analisis dengan mengisi tahun referensi yang akan digunakan dalam perhitungan emisi.
+
+6.   Pilih direktori keluaran (*output directory*) dengan menekan tombol **Browse**, kemudian klik **Select**. Direktori yang dipilih akan ditampilkan pada bagian bawah.
+
+Setelah seluruh data dan parameter dikonfigurasi dengan benar, sistem siap untuk menjalankan proses analisis.
+
+### Langkah 3: Hasil Analisis
+
+Setelah seluruh data dan parameter berhasil dikonfigurasi, pengguna dapat melanjutkan ke tahap analisis.
+
+Klik tombol **Run Analysis** untuk memulai proses komputasi. Sistem akan memproses data yang telah diunggah, termasuk:
+
+-    *Overlay* spasial antara tutupan lahan dan unit perencanaan.
+
+-    Perhitungan emisi gas rumah kaca, khususnya CH₄ dari lahan sawah tergenang dan N₂O dari aplikasi pupuk nitrogen (misalnya urea)
+
+-    Agregasi hasil per unit perencanaan
+
+Indikator progres akan ditampilkan untuk menunjukkan status proses analisis. Waktu pemrosesan bergantung pada ukuran dan resolusi data yang digunakan.
+
+Setelah analisis selesai, notifikasi akan muncul sebagai tanda bahwa proses telah berhasil dijalankan.
+
+Pengguna kemudian dapat meninjau hasil yang dihasilkan, yang meliputi:
+
+-    Tabel ringkasan emisi
+
+-    Grafik visualisasi (misalnya perbandingan CH₄ dan N₂O)
+
+-    Peta distribusi spasial
+
+-    Laporan dalam format HTML
+
+## Tips
+
+-   Pastikan semua data raster yang dimasukkan memiliki CRS dan resolusi yang sama
+-   Periksa struktur tabel referensi sebelum mengunggah
+-   Gunakan dataset yang lebih kecil untuk pengujian sebelum menjalankan analisis penuh
+-   Periksa izin direktori keluaran
+
+# Kebutuhan Data
+
+## Data Input dan Parameter
+
+| Data           | Format     | Description               |
+|----------------|------------|---------------------------|
+| Land Cover     | TIFF       | Land use classification   |
+| Planning Unit  | TIFF / SHP | Spatial analysis zones    |
+| Lookup LC      | CSV        | Land cover classification |
+| CO₂ Lookup     | CSV        | Emission and GWP factors  |
+| Scaling Factor | CSV        | CH₄ adjustment parameters |
+| Fertilizer     | CSV        | Nitrogen input data       |
+| N₂O Lookup     | CSV        | N₂O conversion factors    |
+
+## Data Contoh
+
+Sebagai contoh wilayah, Sulawesi Selatan adalah pilihan yang kuat karena data resmi terbaru yang mudah diverifikasi menunjukkan bahwa pada 2024 provinsi ini memiliki luas panen padi sebesar **951.308,60 ha** dengan produksi padi sekitar **4.818.429,39 ton GKG**. Dalam cuplikan tabel BPS 2024 pada tingkat kabupaten/kota, luas panen juga terlihat terkonsentrasi pada kabupaten sentra seperti **Bone**, **Wajo**, **Sidenreng Rappang**, dan **Soppeng**. Kementerian Pertanian juga menempatkan Sulawesi Selatan sebagai salah satu provinsi penghasil beras terbesar di luar Jawa.
+
+Kalau ingin memakai Sulawesi Selatan sebagai data contoh di manual atau demo modul, maka wilayah ini cukup representatif karena kombinasi luas sawahnya besar, kontribusi produksinya tinggi, dan ada variasi sentra padi antarkabupaten yang jelas untuk menunjukkan perbedaan emisi antar unit perencanaan.
+
+## Pengumpulan Data
+
+Untuk menjalankan modul, data minimum yang dibutuhkan adalah: peta tutupan lahan raster, peta unit perencanaan raster atau shapefile, tabel lookup tutupan lahan yang memuat kelas padi, tabel parameter emisi/konversi, dan tabel dosis pupuk. Jika ingin hasil lebih representatif, tabel pupuk sebaiknya disusun pada level administratif yang paling dekat dengan praktik lapangan, misalnya desa atau kecamatan, bukan hanya kabupaten. Prinsip ini penting karena input pupuk dan pengelolaan air sangat memengaruhi estimasi CH₄ dan N₂O pada metode Tier 2.
+
+Untuk referensi parameter mitigasi, dokumen Kementerian Pertanian menjelaskan bahwa penghematan air melalui irigasi berselang dapat menurunkan CH₄ sawah sebesar 30–50%, sementara dokumen metode mitigasi sektor pertanian juga menegaskan bahwa praktik budidaya dan input organik perlu dihitung dalam kerangka IPCC. Karena itu, data acquisition idealnya tidak hanya mengambil peta dan angka dosis pupuk, tetapi juga menyertakan informasi manajemen air, varietas, dan bila mungkin praktik residu tanaman.
+
+# Keluaran
+
+## Interpretasi Hasil
+
+Hasil analisis disajikan dalam beberapa bagian yang terdiri dari peta, tabel, dan grafik. Setiap keluaran memberikan informasi yang saling melengkapi untuk mendukung interpretasi distribusi lahan sawah serta emisi gas rumah kaca yang dihasilkan.
+
+### Peta Distribusi Sawah
+
+Peta ini menampilkan sebaran spasial antara lahan sawah (paddy) dan non-sawah.
+
+Lahan sawah merupakan kontributor utama emisi CH₄ karena kondisi tanah yang anaerob akibat penggenangan. Informasi spasial ini membantu mengidentifikasi konsentrasi aktivitas pertanian serta area dengan potensi emisi tinggi (*emission hotspots*).
+
+### Grafik Luas Sawah
+
+Grafik ini membandingkan luas lahan sawah dan non-sawah pada setiap unit perencanaan.
+
+Unit perencanaan dengan luas sawah yang lebih besar umumnya berkontribusi lebih tinggi terhadap total emisi, khususnya CH₄. Visualisasi ini membantu mengidentifikasi wilayah dengan intensitas pertanian yang tinggi.
+
+### Tabel Emisi CH₄
+
+Tabel ini menyajikan estimasi emisi metana (CH₄) untuk setiap unit perencanaan.
+
+Perhitungan emisi CH₄ didasarkan pada:
+
+-    Luas lahan sawah
+
+-    Faktor emisi (emission factor)
+
+-    Faktor skala (misalnya pengairan, jenis tanah, varietas)
+
+-    Lama periode tanam
+
+Emisi CH₄ yang lebih tinggi umumnya berkaitan dengan luas sawah yang besar dan kondisi penggenangan yang berlangsung terus-menerus.
+
+### Tabel Emisi N₂O
+
+Tabel ini menampilkan emisi dinitrogen oksida (N₂O) berdasarkan berbagai skenario pemupukan dan pola tanam.
+
+Berbeda dengan CH₄, emisi N₂O lebih dipengaruhi oleh:
+
+-    Jenis dan dosis pupuk
+
+-    Kandungan nitrogen
+
+-    Intensitas atau frekuensi penanaman
+
+Variasi antar skenario menunjukkan potensi penurunan emisi melalui pengelolaan pemupukan yang lebih efisien.
+
+### Tabel Ringkasan Emisi
+
+Tabel ringkasan menggabungkan emisi CH₄ dan N₂O menjadi total emisi dalam satuan setara CO₂ (CO₂-eq).
+
+Tabel ini memberikan gambaran menyeluruh mengenai kontribusi emisi gas rumah kaca dari budidaya padi pada setiap unit perencanaan, serta membantu dalam mengidentifikasi wilayah prioritas untuk intervensi mitigasi.
+
+### **Grafik Emisi**
+
+Grafik emisi menampilkan kontribusi CH₄ dan N₂O pada masing-masing unit perencanaan.
+
+Secara umum:
+
+-    CH₄ merupakan kontributor utama emisi dari lahan sawah
+
+-    N₂O memberikan kontribusi yang lebih kecil, namun tetap signifikan tergantung pada praktik pemupukan
+
+Perbandingan ini membantu pengguna memahami peran relatif dari masing-masing sumber emisi dalam sistem pertanian padi.
+
+# Latar Belakang Teoretis
+
+## Model
+
+Model pada modul ini mengikuti logika inventarisasi emisi berbasis aktivitas: data spasial digunakan untuk menentukan luas sawah per unit perencanaan, lalu faktor emisi dan parameter pengelolaan dipakai untuk menghitung CH₄ dan N₂O. Untuk CH₄ sawah, IPCC 2019 menjelaskan bahwa emisi dihitung dengan mengalikan faktor emisi harian yang sudah disesuaikan dengan lama budidaya dan luas panen; faktor harian tersebut dibentuk dari faktor dasar dan beberapa faktor skala, misalnya rejim air selama budidaya dan rejim air sebelum tanam.
+
+Untuk N₂O, IPCC 2019 menyatakan bahwa emisi langsung dari tanah yang dikelola dihitung dari input N, dan pendekatan Tier 2 memungkinkan pemakaian faktor emisi dan data aktivitas yang lebih rinci jika tersedia. Dokumen IPCC juga menegaskan bahwa sumber N yang diperhitungkan mencakup pupuk sintetis, pupuk organik, residu tanaman, dan sumber N lain yang relevan, sedangkan aplikasi urea juga memiliki bagian tersendiri untuk emisi CO₂.
+
+Dokumen IPCC juga menegaskan bahwa sumber N yang diperhitungkan mencakup pupuk sintetis, pupuk organik, residu tanaman, dan sumber N lain yang relevan, sedangkan aplikasi urea juga memiliki bagian tersendiri untuk emisi CO₂.
+
+## Asumsi Utama
+
+Model ini mengasumsikan bahwa kelas lahan yang diberi atribut padi benar-benar mewakili area sawah yang relevan untuk perhitungan CH₄. Dengan kata lain, perhitungan CH₄ hanya diterapkan pada lahan sawah yang digenangi atau berada dalam skenario budidaya padi, bukan pada seluruh tutupan lahan pertanian. Asumsi ini sejalan dengan pedoman IPCC bahwa CH₄ sawah berasal dari kondisi budidaya padi yang tergenang.
+
+Untuk N₂O, model mengasumsikan bahwa input pupuk yang dimasukkan pengguna sudah merepresentasikan praktik pemupukan aktual di unit perencanaan masing-masing. Ketika tersedia data yang lebih rinci, Tier 2 memungkinkan penggunaan faktor emisi lokal atau faktor yang disesuaikan per kondisi wilayah; karena itu, hasil model ini sangat bergantung pada kualitas lookup table, dosis pupuk, dan konsistensi satuan data yang digunakan.
+
+Dalam konteks pengembangan pertanian efisien karbon, penggunaan faktor lokal dan data wilayah jauh lebih masuk akal daripada default global semata, terutama jika output dipakai untuk perencanaan daerah, evaluasi intervensi, atau penyusunan kebijakan mitigasi. Di Sulawesi Selatan, beberapa kajian lokal yang saya temukan memang berfokus pada sawah intensif dan lokasi-lokasi seperti Pangkep serta sistem budidaya padi yang diuji dengan pengaturan air, varietas, atau input pupuk.
+
+## Keterbatasan
+
+Modul ini masih memiliki batasan penting. Pertama, fokus utamanya adalah padi sawah, sehingga hasil tidak dapat langsung digeneralisasi ke komoditas lain. Kedua, perhitungan CH₄ sangat bergantung pada asumsi kondisi genangan dan beberapa parameter lainnya, sehingga perubahan praktik budidaya dapat mengubah hasil secara signifikan. Ketiga, estimasi N₂O hanya sebaik data input pupuk dan faktor konversi yang tersedia; jika data lokal belum lengkap, hasil tetap menjadi estimasi berbasis parameter yang disederhanakan. Batasan ini selaras dengan karakter Tier 2: lebih spesifik daripada Tier 1, tetapi tetap belum setara dengan Tier 3 yang membutuhkan model atau pengukuran lapangan yang jauh lebih intensif.
+
+# Referensi
+
+Bouwman, A. F. (1989). Exchange of greenhouse gases between terrestrial ecosystems and the atmosphere. In *Soils and the Greenhouse Effect* (pp. 61–127). John Wiley & Sons.
+
+De Datta, S. K., Buresh, R. J., & Samson, M. I. (1991). Nitrogen use efficiency and losses in flooded rice systems. *Fertilizer Research*, 26(1–3), 127–140. https://doi.org/10.1007/BF01048758
+
+Hadi, A., Inubushi, K., Purnomo, E., Razie, F., Yamakawa, K., & Tsuruta, H. (2005). Effect of land-use change on nitrous oxide (N₂O) emission from tropical peatlands. *Chemosphere*, 59(6), 745–751. https://doi.org/10.1016/j.chemosphere.2004.11.038
+
+IPCC. (2001). *Climate Change 2001: The Scientific Basis*. Cambridge University Press.
+
+IPCC. (2006). *2006 IPCC Guidelines for National Greenhouse Gas Inventories*. Institute for Global Environmental Strategies (IGES).
+
+IPCC. (2014). *Climate Change 2014: Synthesis Report*. Intergovernmental Panel on Climate Change.
+
+IPCC. (2019). *2019 Refinement to the 2006 IPCC Guidelines for National Greenhouse Gas Inventories*. IPCC. <https://www.ipcc-nggip.iges.or.jp/public/2019rf/>
+
+Ladha, J. K., Pathak, H., Krupnik, T. J., Six, J., & van Kessel, C. (2005). Efficiency of fertilizer nitrogen in cereal production: Retrospects and prospects. *Advances in Agronomy*, 87, 85–156. https://doi.org/10.1016/S0065-2113(05)87003-8
+
+Latifah, N. (2020). Analisis potensi pemanasan global dari emisi gas rumah kaca pada sektor pertanian. *Jurnal Lingkungan dan Pembangunan*, 4(2), 45–53.
+
+Linquist, B., van Groenigen, K. J., Adviento-Borbe, M. A., Pittelkow, C., & van Kessel, C. (2012). An agronomic assessment of greenhouse gas emissions from major cereal crops. *Global Change Biology*, 18(1), 194–209. <https://doi.org/10.1111/j.1365-2486.2011.02502.x>
+
+Neue, H. U., & Sass, R. L. (1994). Trace gas emissions from rice fields. *Environmental Science Research*, 48, 119–147.
+
+Purnamasari, E., Suryani, E., & Wihardjaka, A. (2019). Emisi gas rumah kaca dari sektor pertanian di Indonesia dan upaya mitigasinya. *Jurnal Sumberdaya Lahan*, 13(2), 95–104.
+
+Kementerian Pertanian. (2012). *Pedoman Teknis Pengelolaan Lahan Sawah Berbasis Emisi Gas Rumah Kaca*. Badan Penelitian dan Pengembangan Pertanian, Kementerian Pertanian Republik Indonesia.
+
+Dinas Pertanian Provinsi Sulawesi Selatan. (2023). *Statistik Pertanian Tanaman Pangan Sulawesi Selatan*. Pemerintah Provinsi Sulawesi Selatan.

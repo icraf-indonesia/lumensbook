@@ -1,4 +1,4 @@
-# Regional Economic Projection {#sec-regeco2 .unnumbered}
+# Regional Economic Projection {#sec-regeco2}
 
 
 ## 1. Description

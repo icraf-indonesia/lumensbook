@@ -1,4 +1,4 @@
-# Scenario Builder {#sec-scenario .unnumbered}
+# Scenario Builder {#sec-scenario}
 
 ---
 title: "Scenario Builder"

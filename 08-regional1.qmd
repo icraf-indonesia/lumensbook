@@ -1,4 +1,4 @@
-# Regional Economic Descriptive Analysis {#sec-regeco1 .unnumbered}
+# Regional Economic Descriptive Analysis {#sec-regeco1}
 
 
 ## 1. Description

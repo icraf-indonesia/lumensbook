@@ -1,7 +1,7 @@
 # Land Use Change Modelling using DINAMICA {#sec-lucm}
 
 ---
-title: "[Land Use Change Modelling using Dinamica]"
+title: "Land Use Change Modelling using Dinamica"
 editor: 
   markdown: 
     wrap: sentence

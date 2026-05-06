@@ -1,4 +1,4 @@
-# Land Suitability Evaluation Module (LaSEM) {#sec-lasem .unnumbered}
+# Land Suitability Evaluation Module (LaSEM) {#sec-lasem}
 
 ---
 title: "Land Suitability Evaluation Module (LaSEM)"
