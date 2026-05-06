@@ -56,6 +56,7 @@ book:
         - 05-biodiversity.qmd
         - 06-hydrology.qmd
         - 12-lasem.qmd
+        - 13-rice_ID.qmd
     - part: ta.qmd
       chapters: 
         - 07-profitability.qmd
