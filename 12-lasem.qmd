@@ -53,7 +53,7 @@ The workflow for this module can be divided into four key steps.
 
 3.  **Analyze results.** Upon completion, the user will find the analysis results in the module or directly in the output folder.
 
-Insert framework
+The application interface uses a three-tab layout: **Upload & Preview**, **Inspect Factors** (optional), and **Results**. Validation occurs automatically when files are uploaded, with inline feedback in the sidebar, a validation panel in the main area, and detailed error messages if analysis fails.
 
 ## Step-by-step instructions
 
@@ -243,6 +243,22 @@ The example dataset for this module, i.e. the crop suitability parameters and in
 
 ### Output Files
 
+After running the analysis, the following files are generated in the selected output directory:
+
+| File | Format | Description |
+|------|--------|-------------|
+| `land_suitability.tif` | GeoTIFF | Final suitability raster with S1/S2/S3/N classes |
+| `land_suitability.rds` | RDS | Suitability polygons (sf object) with attributes |
+| `suitability_factors.tif` | GeoTIFF | Individual factor classification maps (multi-layer) |
+| `soil_climate_factors.rds` | RDS | Harmonised input rasters (terra::wrap format) |
+| `suitability_lookup.csv` | CSV | Lookup table mapping ID to parameter names |
+| `LaSEM_report.html` | HTML | Comprehensive analysis report with static maps |
+| `raster_inputs.csv` | CSV | Copy of uploaded raster inputs |
+| `crop_suitability.csv` | CSV | Copy of uploaded crop suitability parameters |
+| `intervention.csv` | CSV | Copy of uploaded intervention lookup table |
+
+All raster outputs use the same coordinate reference system and extent as the input rasters. The polygon output (`land_suitability.rds`) is projected to WGS84 (EPSG:4326) for web mapping compatibility.
+
 ### Report Interpretation
 
 The LaSEM module report consists of 6 main sections, namely: Intro; Crop environmental requirements; Agrocllimatic, soil and terrain conditions; Crop suitability map; Land suitability according to each climate or edaphic factor; and Land suitability improvements.
@@ -267,26 +283,52 @@ Users may choose, on the top right-hand corner of the map, the type of suitabili
 
 The different colors of the map indicate the level of suitability for the given crop.
 
--   **Red** indicates no suitability for the crop, labelled ‘N’.
+-   **Red** indicates no suitability for the crop, labelled 'N'.
 
--   **Orange** indicates low suitability, labelled 'S3’.
+-   **Orange** indicates low suitability, labelled 'S3'.
 
--   **Light green** indicates medium suitability, labelled 'S2’.
+-   **Light green** indicates medium suitability, labelled 'S2'.
 
--   **Dark green** indicates high suitability, labelled ‘S3’.
+-   **Dark green** indicates high suitability, labelled 'S1'.
 
 For each intervention map, crop suitability shifts based on the level of intervention implemented.
 As interventions increase, more land becomes suitable for crop growth.
 
 **Section 5: Land suitability according to each climate or edaphic factor**
 
-In this tab, users may find the input data for all crop parameters in spatial form.
-This is useful for users to have a closer look into the data input for the study.
+This section displays small-multiples maps showing the individual suitability classification (S1/S2/S3/N) for each biophysical factor. This is useful for identifying which specific parameters are limiting in different areas of the study region.
 
 **Section 6: Land suitability improvements**
 
-Based on the crop suitability analysis, this last section shows the extent that each land parameter can be improved in tabular form.
-The more '+' signs shows the more effort needed to reach a higher level of intervention.
+Based on the crop suitability analysis, this last section shows the extent that each land parameter can be improved through management interventions in tabular form. The more '+' signs, the more effort is needed to reach a higher level of intervention.
+
+### Example Datasets
+
+Example datasets for Bone Regency, South Sulawesi are provided for three commodities: maize (Zea mays), cacao (Theobroma cacao), and arabica coffee (Coffea arabica).
+
+**Maize (Jagung) Suitability Example**
+
+The maize example uses 18 biophysical raster layers (climate, soil, terrain) and evaluates suitability based on Ministry of Agriculture technical guidelines. Key limiting factors for maize in Bone Regency typically include soil texture, soil depth, and precipitation patterns.
+
+To run the maize example:
+
+1. Load `crop_suitability_spatial_input.csv` as the raster inputs table
+2. Load `land_suitability_parameters_maize.csv` as the crop suitability parameters
+3. Load `lookup_intervention.csv` as the intervention lookup table
+4. Select an output directory and run the analysis
+
+**Cacao Suitability Example**
+
+The cacao example demonstrates suitability evaluation for a perennial crop with different environmental requirements. Cacao is more sensitive to temperature ranges and soil drainage compared to maize.
+
+To run the cacao example:
+
+1. Load the same `crop_suitability_spatial_input.csv` raster inputs table
+2. Load `land_suitability_parameters_cacao.csv` as the crop suitability parameters
+3. Load `lookup_intervention.csv` as the intervention lookup table
+4. Select an output directory and run the analysis
+
+Note that the same raster inputs can be reused across different commodities - only the crop suitability parameters and intervention tables need to be swapped. This supports comparative multi-commodity analysis planned for LaSEM v1.2.
 
 ## Theoretical Background
 
@@ -309,7 +351,15 @@ Insights from these maps and diagram could provide valuable information for poli
 
 ### Key Assumptions
 
-In this analysis, it is assumed that according to Liebig’s law of the minimum, the factor that is at the most limiting level will determine the final suitability level.
+In this analysis, it is assumed that according to Liebig's law of the minimum, the factor that is at the most limiting level will determine the final suitability level. This is known as the **Maximum Limitation Method (MLM)**.
+
+The method works as follows:
+
+1. Each biophysical parameter (temperature, precipitation, soil pH, etc.) is reclassified into suitability classes (S1, S2, S3, N) based on crop-specific thresholds.
+2. For each pixel, the factor with the lowest suitability class (most limiting) determines the final suitability.
+3. If any parameter rates a pixel as N (Not Suitable), the overall suitability is N regardless of other favorable conditions.
+
+**Intervention scenarios** are calculated by assuming management can improve certain factors by 1-3 suitability classes, based on the intervention lookup table. Factors marked as non-intervenable cannot be improved regardless of management level.
 
 ### Limitations
 
