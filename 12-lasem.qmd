@@ -1,71 +1,72 @@
-# Land Suitability Evaluation Module (LaSEM) {#sec-lasem}
+# Modul Evaluasi Kesesuaian Lahan (LaSEM) {#sec-lasem}
 
 ---
-title: "Land Suitability Evaluation Module (LaSEM)"
+title: "Modul Evaluasi Kesesuaian Lahan (LaSEM)"
 editor: 
   markdown: 
     wrap: sentence
 ---
 
-## Overview
+## Gambaran Umum
 
-The Land Suitability Evaluation Module (LaSEM) is an R-based application that helps to produce land suitability maps for food crops, horticulture or plantations according to their biophysical suitability, providing information for formulating policies related to land use and increasing the productivity of key commodities.
-​It is important to note that the map strictly considers biophysical factors and does not account for land allocation maps or maps resulting from specific policies or rules.
+Modul Evaluasi Kesesuaian Lahan (LaSEM) adalah aplikasi berbasis R yang berfungsi menghasilkan peta kesesuaian lahan untuk tanaman pangan, hortikultura, maupun perkebunan sesuai dengan kriteria kesesuaian biofisiknya. Modul ini memberikan informasi untuk menyusun kebijakan terkait penggunaan lahan dan meningkatkan produktivitas komoditas utama.
 
-For a given location (pixel), the analysis could provide answers on:
+Penting untuk dicatat bahwa peta yang dihasilkan hanya mempertimbangkan faktor biofisik dan tidak memperhitungkan peta alokasi lahan maupun peta yang dihasilkan dari kebijakan atau aturan tertentu.
 
--   What crops are suitable for growing in this location?
+Untuk setiap lokasi (piksel), analisis ini dapat memberikan jawaban atas pertanyaan berikut:
 
--   What are the limiting factors for crop growth in this location?
+-   Tanaman apa yang sesuai untuk ditanam di lokasi ini?
 
--   How can the limiting factors be addressed?
+-   Apa saja faktor pembatas pertumbuhan tanaman di lokasi ini?
 
-LaSEM works by analyzing biophysical parameters that influence crop growth.
-The data used is in the form of a map in raster format with values ​​that will be classified into suitability classes for the relevant crop commodities based on the "[Land Evaluation for Agricultural Commodities 2011](https://www.slideshare.net/slideshow/%20Evaluation-lahan-for-Commodities-%20agriculture/89498148)" guidelines.
-To produce the actual land suitability class of an area, parameter maps are used in overlap analysis in LaSEM.
+-   Bagaimana cara mengatasi faktor pembatas tersebut?
 
-Once produced, land suitability maps categorize the study area into areas as follows:
+LaSEM bekerja dengan menganalisis parameter biofisik yang memengaruhi pertumbuhan tanaman.
+Data yang digunakan berupa peta dalam format raster dengan nilai-nilai yang akan diklasifikasikan ke dalam kelas kesesuaian untuk komoditas tanaman yang relevan, berdasarkan pedoman "[Evaluasi Lahan untuk Komoditas Pertanian 2011](https://www.slideshare.net/slideshow/%20Evaluation-lahan-for-Commodities-%20agriculture/89498148)".
+Untuk menghasilkan kelas kesesuaian lahan aktual suatu daerah, peta parameter digunakan dalam analisis tumpang susun di LaSEM.
 
--   Biophysically suitable for a crop or farming system
+Setelah dihasilkan, peta kesesuaian lahan mengkategorikan daerah studi ke dalam area sebagai berikut:
 
--   Not biophysically suitable, but the limiting factors can be addressed
+-   Sesuai secara biofisik untuk suatu tanaman atau sistem pertanian
 
--   Not biophysically suitable, and the limiting factors cannot be addressed
+-   Tidak sesuai secara biofisik, namun faktor pembatasnya dapat diatasi
 
-This module can be used by agriculturalists and land use planners to make informed decisions about crop production.
-Some specific examples include:
+-   Tidak sesuai secara biofisik, dan faktor pembatasnya tidak dapat diatasi
 
--   A government agency could use this software to develop a land use plan for a region.
+Modul ini dapat digunakan oleh praktisi pertanian dan perencana tata ruang untuk mengambil keputusan yang terinformasi terkait produksi tanaman.
+Beberapa contoh penerapan spesifik antara lain:
 
--   A research organization could use this software to study the impact of climate change on crop production.
+-   Instansi pemerintah dapat menggunakan perangkat lunak ini untuk menyusun rencana tata ruang suatu daerah.
 
-## Usage
+-   Organisasi penelitian dapat menggunakan perangkat lunak ini untuk mempelajari dampak perubahan iklim terhadap produksi tanaman.
 
-### Workflow
+## Penggunaan
 
-The workflow for this module can be divided into four key steps.
+### Alur Kerja
 
-1.  **Data preparation**.
-    In this step, users prepare the necessary data, noting the correct input specifications.
+Alur kerja modul ini dapat dibagi menjadi empat langkah utama.
 
-2.  **Upload data**.
-    Once all the data has been prepared, users input the data by clicking Browse or manually dragging the input data to the correct attribute.
+1.  **Persiapan data**.
+    Pada langkah ini, pengguna menyiapkan data yang diperlukan dengan memperhatikan spesifikasi input yang benar.
 
-3.  **Analyze results.** Upon completion, the user will find the analysis results in the module or directly in the output folder.
+2.  **Unggah data**.
+    Setelah seluruh data disiapkan, pengguna memasukkan data dengan mengklik Browse atau menyeret data input secara manual ke atribut yang sesuai.
 
-The application interface uses a three-tab layout: **Upload & Preview**, **Inspect Factors** (optional), and **Results**. Validation occurs automatically when files are uploaded, with inline feedback in the sidebar, a validation panel in the main area, and detailed error messages if analysis fails.
+3.  **Analisis hasil.** Setelah selesai, pengguna akan menemukan hasil analisis di dalam modul atau langsung di folder output.
 
-## Step-by-step instructions
+Antarmuka aplikasi menggunakan tata letak tiga tab: **Unggah & Pratinjau**, **Periksa Faktor** (opsional), dan **Hasil**. Validasi berlangsung secara otomatis ketika file diunggah, dengan umpan balik inline di sidebar, panel validasi di area utama, serta pesan error rinci jika analisis gagal.
 
-### **Step 1: Data Preparation**
+## Petunjuk Langkah demi Langkah
 
-1.  **Prepare the raster input look up table** (saved in CSV format) containing the details of the input data as required in section 3.3.
-    The look up table should include five columns: ID, parameter, name_parameter, availability, and raster_path (data directory).
-    Unavailable data can be labelled with NA.
+### **Langkah 1: Persiapan Data**
 
-    Please be aware that the raster file paths specified in the configuration CSV (\`raster_path\`) are currently set to absolute paths specific to the users' environment.
-    Users will need to adjust these paths to match their local or deployment environments.
-    Below is an example of the CSV structure:
+1.  **Siapkan tabel look up input raster** (disimpan dalam format CSV) yang berisi rincian data input sesuai yang dijelaskan di bagian 3.3.
+    Tabel look up harus mencakup lima kolom: ID, parameter, name_parameter, availability, dan raster_path (direktori data).
+    Data yang tidak tersedia dapat diberi label NA.
+
+    Perlu diketahui bahwa path file raster yang ditentukan dalam CSV konfigurasi (`raster_path`) saat ini diatur ke path absolut yang spesifik untuk lingkungan pengguna.
+    Pengguna perlu menyesuaikan path tersebut agar sesuai dengan lingkungan lokal atau deployment mereka.
+    Berikut adalah contoh struktur CSV:
 
 +----------+-----------------------+------------------------+------------------+------------------------------------------------------------+
 | **ID**   | **parameter**         | **parameter_name**     | **availability** | **raster_path**                                            |
@@ -83,10 +84,10 @@ The application interface uses a three-tab layout: **Upload & Preview**, **Inspe
 | etc.     |                       |                        |                  |                                                            |
 +----------+-----------------------+------------------------+------------------+------------------------------------------------------------+
 
-1.  **Prepare crop suitability parameters and intervention lookup table** (saved in CSV format).
-    For the exercise in this module, crop suitability parameters and intervention look-up table were obtained from the Ministry of Agriculture’s land suitability technical manual which can be accessed [here](https://repository.pertanian.go.id/items/fecc0ad1-d13b-46f5-add6-8917dcccc7a3).
+1.  **Siapkan parameter kesesuaian tanaman dan tabel look up intervensi** (disimpan dalam format CSV).
+    Untuk latihan dalam modul ini, parameter kesesuaian tanaman dan tabel look up intervensi diperoleh dari pedoman teknis kesesuaian lahan Kementerian Pertanian yang dapat diakses [di sini](https://repository.pertanian.go.id/items/fecc0ad1-d13b-46f5-add6-8917dcccc7a3).
 
-    The crop suitability parameter look up table should include five columns: name_common, name_sp, class, name_parameter, value, unit, as follows.
+    Tabel look up parameter kesesuaian tanaman harus mencakup lima kolom: name_common, name_sp, class, name_parameter, value, unit, sebagai berikut.
 
 +-----------------+------------------+-----------+--------------------+-----------+----------+
 | **Name_common** | **Name_sp**      | **Class** | **Name_parameter** | **value** | **unit** |
@@ -102,7 +103,7 @@ The application interface uses a three-tab layout: **Upload & Preview**, **Inspe
 | …               |                  |           |                    |           |          |
 +-----------------+------------------+-----------+--------------------+-----------+----------+
 
-While your intervention look up table should include the following columns: no; land_characteristics; name_parameter; intervention; low; med; high
+Sementara itu, tabel look up intervensi harus mencakup kolom-kolom berikut: no; land_characteristics; name_parameter; intervention; low; med; high
 
 +--------+----------------------------+------------------------+------------------+---------+---------+----------+
 | **no** | **land_characteristics**   | n**ame_parameter**     | **intervention** | **low** | **med** | **high** |
@@ -128,256 +129,251 @@ While your intervention look up table should include the following columns: no; 
 | **…**  |                            |                        |                  |         |         |          |
 +--------+----------------------------+------------------------+------------------+---------+---------+----------+
 
-1.  Once prepared, run the LaSEM shiny application to start the module.
+1.  Setelah disiapkan, jalankan aplikasi shiny LaSEM untuk memulai modul.
 
-### Step 2: Uploading Data
+### Langkah 2: Mengunggah Data
 
-1.  **Users will first upload the raster input table (csv).** Upload the look up table by clicking Browse.
-    Once selected, users can press Select and a progress bar will appear indicating that the upload is complete.
+1.  **Pengguna terlebih dahulu mengunggah tabel input raster (csv).** Unggah tabel look up dengan mengklik Browse.
+    Setelah dipilih, pengguna dapat menekan Select dan bilah kemajuan akan muncul menandakan bahwa unggahan selesai.
 
-2.  **Upload the** **crop suitability parameters** for the crop you wish to analyse.
-    A progress bar will appear indicating that the upload is complete.
+2.  **Unggah parameter kesesuaian tanaman** untuk tanaman yang ingin dianalisis.
+    Bilah kemajuan akan muncul menandakan bahwa unggahan selesai.
 
-3.  **Upload the intervention look-up table** of the crop you wish to analyse.
-    A progress bar will appear indicating that the upload is complete.
+3.  **Unggah tabel look up intervensi** untuk tanaman yang ingin dianalisis.
+    Bilah kemajuan akan muncul menandakan bahwa unggahan selesai.
 
-4.  **Choose your output directory and press Select.** The chosen directory will be shown in the bar below.
+4.  **Pilih direktori output dan tekan Select.** Direktori yang dipilih akan ditampilkan di bilah di bawahnya.
 
-### Step 3: Analyze Results
+### Langkah 3: Menganalisis Hasil
 
-1.  Finish data uploads and run analysis by clicking the Analysis tab.
+1.  Selesaikan unggahan data dan jalankan analisis dengan mengklik tab Analisis.
 
-## Tips
+## Kiat
 
--   The module produces more accurate results when more input data is uploaded. An indicator (pH, temperature, total precipitation, etc) may be significant in evaluating crop suitability despite it being unavailable. Hence, the principle stands: garbage in, garbage out.
--   When making your raster input look up table, make sure that you change your raster path location accordingly. Note that some directories may use “\\” in the directory path which needs to be adjusted to accommodate “/” in the application. Otherwise, the application will not be able to detect the directory path and will not compute.
+-   Modul ini menghasilkan hasil yang lebih akurat ketika lebih banyak data input yang diunggah. Suatu indikator (pH, temperatur, total presipitasi, dan sebagainya) mungkin signifikan dalam mengevaluasi kesesuaian tanaman meskipun data tersebut tidak tersedia. Oleh karena itu, prinsipnya tetap berlaku: *garbage in, garbage out*.
+-   Ketika membuat tabel look up input raster, pastikan Anda mengubah lokasi path raster sesuai kebutuhan. Perlu diketahui bahwa beberapa direktori mungkin menggunakan "\\" dalam path direktori yang perlu disesuaikan untuk mengakomodasi "/" dalam aplikasi. Jika tidak, aplikasi tidak akan dapat mendeteksi path direktori dan tidak dapat menghitung.
 
-## Data Requirements
+## Persyaratan Data
 
-### Input Data & Parameters
+### Data Input dan Parameter
 
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **No** | **Data Name**                    | **Format** | **Projection Requirements**  | **Description**                                                                                                                                 | **Source**                                                                                                                                                       |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 1\.    | Average temperature              | TIFF       | Spatial resolution 1km x 1km | Air temperature affects the physiological processes of plants, determining the suitability of the climate for the growth of a particular plant. | Bioclimatic variables for Worldclim 2.1 - <https://www.worldclim.org/data/worldclim21.html>                                                                      |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **No** | **Nama Data**                    | **Format** | **Persyaratan Proyeksi**     | **Deskripsi**                                                                                                                                 | **Sumber**                                                                                                                                                       |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 1\.    | Temperatur rata-rata             | TIFF       | Resolusi spasial 1 km x 1 km | Temperatur udara memengaruhi proses fisiologis tanaman, menentukan kesesuaian iklim untuk pertumbuhan tanaman tertentu. | Variabel bioklimatik Worldclim 2.1 - <https://www.worldclim.org/data/worldclim21.html>                                                                           |
 |        |                                  |            |                              |                                                                                                                                                 | <https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_bio.zip>                                                                                       |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 2\.    | Total precipitation              | TIFF       | Spatial resolution 1km x 1km | Shows the amount of annual rainfall. Indicator of water availability for plants.                                                                |                                                                                                                                                                  |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 3\.    | Dry months                       | TIFF       | Spatial resolution 1km x 1km | Number of months with average rainfall equal to or less than 100 mm/month                                                                       | Derived from Monthly Rainfall from Worldclim 2.1                                                                                                                 |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 2\.    | Presipitasi total                | TIFF       | Resolusi spasial 1 km x 1 km | Menunjukkan jumlah curah hujan tahunan. Indikator ketersediaan air untuk tanaman.                                                                |                                                                                                                                                                  |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 3\.    | Bulan kering                     | TIFF       | Resolusi spasial 1 km x 1 km | Jumlah bulan dengan curah hujan rata-rata sama dengan atau kurang dari 100 mm/bulan                                                              | Turunan dari Curah Hujan Bulanan Worldclim 2.1                                                                                                                   |
 |        |                                  |            |                              |                                                                                                                                                 | <https://www.worldclim.org/data/worldclim21.html>                                                                                                                |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
 |        |                                  |            |                              |                                                                                                                                                 | <https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_prec.zip>                                                                                      |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 4\.    | Wet months                       | TIFF       | Spatial resolution 1km x 1km | Number of months with average rainfall of more than 200 mm/month                                                                                | Derived from Monthly Rainfall from Worldclim 2.1                                                                                                                 |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 4\.    | Bulan basah                      | TIFF       | Resolusi spasial 1 km x 1 km | Jumlah bulan dengan curah hujan rata-rata lebih dari 200 mm/bulan                                                                                | Turunan dari Curah Hujan Bulanan Worldclim 2.1                                                                                                                   |
 |        |                                  |            |                              |                                                                                                                                                 | <https://www.worldclim.org/data/worldclim21.html>                                                                                                                |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
 |        |                                  |            |                              |                                                                                                                                                 | <https://geodata.ucdavis.edu/climate/worldclim/2_1/base/wc2.1_30s_prec.zip>                                                                                      |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 5\.    | Humidity                         | TIFF       | Spatial resolution 1km x 1km | The level of air wetness or the amount of water vapor in the air                                                                                | CHELSA                                                                                                                                                           |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 5\.    | Kelembaban                       | TIFF       | Resolusi spasial 1 km x 1 km | Tingkat kelembaban udara atau jumlah uap air di udara                                                                                           | CHELSA                                                                                                                                                           |
 |        |                                  |            |                              |                                                                                                                                                 | <https://chelsa-climate.org/downloads/>                                                                                                                          |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
 |        |                                  |            |                              |                                                                                                                                                 | <https://os.zhdk.cloud.switch.ch/envicloud/chelsa/chelsa_V2/GLOBAL/climatologies/1981-2010/bio/CHELSA_hurs_mean_1981-2010_V.2.1.tif>                             |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 6\.    | Soil drainage                    | TIFF       | 1:250.000                    | Shows the soil's ability to drain water.                                                                                                        | RePPRoT/ Harmonized World Soil Database v 2.0 - <https://www.fao.org/soils-portal/data-hub/soil-maps-and-databases/harmonized-world-soil-database-v20/en/>       |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 6\.    | Drainase tanah                   | TIFF       | 1:250.000                    | Menunjukkan kemampuan tanah mengalirkan air.                                                                                                    | RePPRoT/ Harmonized World Soil Database v 2.0 - <https://www.fao.org/soils-portal/data-hub/soil-maps-and-databases/harmonized-world-soil-database-v20/en/>       |
 |        |                                  |            |                              |                                                                                                                                                 | [https://www.fao.org/fileadmin/user_upload/soils/HWSD Viewer/HWSD_RASTER.zip](https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/HWSD/HWSD2_RASTER.zip) |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 7\.    | Soil texture                     | TIFF       | 250m x 250 m                 | Comparison of grains of sand (0.05 - 2.0 mm), dust (0.002 - 0.05 mm) and clay (\< 0.002 mm).                                                    | OpenLandMap - <https://developers.google.com/earth-engine/datasets/catalog/OpenLandMap_SOL_SOL_TEXTURE-CLASS_USDA-TT_M_v02>                                      |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 8\.    | Soil coarse fragments            | TIFF       | 250m x 250 m                 | Information on coarse fragment content, materials measuring \> 2 mm, affect water retention capacity, drainage and ease of tillage.             | SoilGrids250m 2.0-  <https://soilgrids.org/>                                                                                                                     |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 7\.    | Tekstur tanah                    | TIFF       | 250 m x 250 m                | Perbandingan butir pasir (0,05 - 2,0 mm), debu (0,002 - 0,05 mm), dan liat (< 0,002 mm).                                                       | OpenLandMap - <https://developers.google.com/earth-engine/datasets/catalog/OpenLandMap_SOL_SOL_TEXTURE-CLASS_USDA-TT_M_v02>                                      |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 8\.    | Fragmen kasar tanah              | TIFF       | 250 m x 250 m                | Informasi kandungan fragmen kasar, material berukuran > 2 mm, memengaruhi kapasitas retensi air, drainase, dan kemudahan pengolahan tanah.     | SoilGrids250m 2.0- <https://soilgrids.org/>                                                                                                                     |
 |        |                                  |            |                              |                                                                                                                                                 | ISRIC - Index of /soilgrids/latest/data/                                                                                                                         |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 9\.    | Soil depth                       | TIFF       | 1km x 1km                    | The depth of the soil layer that can be utilized for the development of plant roots.                                                            | Global 1-km Gridded Thickness of Soil, Regolith, and Sedimentary Deposit Layers -  <https://daac.ornl.gov/SOILS/guides/Global_Soil_Regolith_Sediment.html>       |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 9\.    | Kedalaman tanah                  | TIFF       | 1 km x 1 km                  | Kedalaman lapisan tanah yang dapat dimanfaatkan untuk perkembangan akar tanaman.                                                                | Global 1-km Gridded Thickness of Soil, Regolith, and Sedimentary Deposit Layers - <https://daac.ornl.gov/SOILS/guides/Global_Soil_Regolith_Sediment.html>       |
 |        |                                  |            |                              |                                                                                                                                                 | <https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=1304>                                                                                                           |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 10\.   | Average cation exchange capacity | TIFF       | 250m x 250m                  | Describes the soil's ability to store and release cations such as Ca, Mg, K, and Na.                                                            | SoilGrids250m 2.0-  <https://soilgrids.org/>                                                                                                                     |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 10\.   | KTK (Kapasitas Tukar Kation)     | TIFF       | 250 m x 250 m                | Menggambarkan kemampuan tanah menyimpan dan melepaskan kation seperti Ca, Mg, K, dan Na.                                                        | SoilGrids250m 2.0- <https://soilgrids.org/>                                                                                                                     |
 |        |                                  |            |                              |                                                                                                                                                 | ISRIC - Index of /soilgrids/latest/data/                                                                                                                         |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 11\.   | Soil base saturation             | TIFF       | 1:250.000                    | Shows the percentage of exchange complexes occupied by base cations. This value correlates with soil fertility and soil pH.                     | RePPRoT/ Harmonized World Soil Database v 2.0 -  <https://www.fao.org/soils-portal/data-hub/soil-maps-and-databases/harmonized-world-soil-database-v20/en/>      |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 11\.   | Kejenuhan basa tanah             | TIFF       | 1:250.000                    | Menunjukkan persentase kompleks pertukaran yang diduduki oleh kation basa. Nilai ini berkorelasi dengan kesuburan tanah dan pH tanah.            | RePPRoT/ Harmonized World Soil Database v 2.0 - <https://www.fao.org/soils-portal/data-hub/soil-maps-and-databases/harmonized-world-soil-database-v20/en/>      |
 |        |                                  |            |                              |                                                                                                                                                 | [https://www.fao.org/fileadmin/user_upload/soils/HWSD Viewer/HWSD_RASTER.zip](https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/HWSD/HWSD2_RASTER.zip) |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 12\.   | Soil pH                          | TIFF       | 250m x 250m                  | An indicator of the level of acidity or alkalinity of soil.                                                                                     | SoilGrids250m 2.0-  <https://soilgrids.org/>                                                                                                                     |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 12\.   | pH tanah                         | TIFF       | 250 m x 250 m                | Indikator tingkat keasaman atau kebasaan tanah.                                                                                                 | SoilGrids250m 2.0- <https://soilgrids.org/>                                                                                                                     |
 |        |                                  |            |                              |                                                                                                                                                 | ISRIC - Index of /soilgrids/latest/data/                                                                                                                         |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 13\.   | Organic carbon content           | TIFF       | 250m x 250m                  | Organic carbon content in the soil describes the content of organic matter in the soil.                                                         | SoilGrids250m 2.0-  <https://soilgrids.org/>                                                                                                                     |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 13\.   | Karbon organik                   | TIFF       | 250 m x 250 m                | Kandungan karbon organik dalam tanah menggambarkan kandungan bahan organik dalam tanah.                                                         | SoilGrids250m 2.0- <https://soilgrids.org/>                                                                                                                     |
 |        |                                  |            |                              |                                                                                                                                                 | ISRIC - Index of /soilgrids/latest/data/                                                                                                                         |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 14\.   | Nitrogen content                 | TIFF       | 250m x 250m                  | Shows the amount of nitrogen in various forms in the soil.                                                                                      | SoilGrids250m 2.0-  <https://soilgrids.org/>                                                                                                                     |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 14\.   | Kandungan nitrogen               | TIFF       | 250 m x 250 m                | Menunjukkan jumlah nitrogen dalam berbagai bentuk di dalam tanah.                                                                               | SoilGrids250m 2.0- <https://soilgrids.org/>                                                                                                                     |
 |        |                                  |            |                              |                                                                                                                                                 | ISRIC - Index of /soilgrids/latest/data/                                                                                                                         |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 15\.   | Soil salinity                    | TIFF       | 1:250.000                    | An indicator of the concentration of dissolved salts in the soil.                                                                               | RePPRoT/ Harmonized World Soil Database v 2.0 -  <https://www.fao.org/soils-portal/data-hub/soil-maps-and-databases/harmonized-world-soil-database-v20/en/>      |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 15\.   | Salinitas tanah                  | TIFF       | 1:250.000                    | Indikator konsentrasi garam terlarut dalam tanah.                                                                                               | RePPRoT/ Harmonized World Soil Database v 2.0 - <https://www.fao.org/soils-portal/data-hub/soil-maps-and-databases/harmonized-world-soil-database-v20/en/>      |
 |        |                                  |            |                              |                                                                                                                                                 | [https://www.fao.org/fileadmin/user_upload/soils/HWSD Viewer/HWSD_RASTER.zip](https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/HWSD/HWSD2_RASTER.zip) |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 16\.   | Slope                            | TIFF       | 30m x 30m                    | Land slope                                                                                                                                      | NASA SRTM Digital Elevation 30m -  <https://developers.google.com/earth-engine/datasets/catalog/USGS_SRTMGL1_003>                                                |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 17\.   | Soil alkalinity                  | TIFF       | 1:250.000                    | Alkalinity, the amount of exchangeable sodium (Na) content (%), indicates the toxicity of sodium for plants.                                    | RePPRoT/ Harmonized World Soil Database v 2.0 -  <https://www.fao.org/soils-portal/data-hub/soil-maps-and-databases/harmonized-world-soil-database-v20/en/>      |
-|        |                                  |            |                              |                                                                                                                                                 |                                                                                                                                                                  |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 16\.   | Lereng                           | TIFF       | 30 m x 30 m                  | Kemiringan lahan                                                                                                                                | NASA SRTM Digital Elevation 30m - <https://developers.google.com/earth-engine/datasets/catalog/USGS_SRTMGL1_003>                                                |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 17\.   | Alkalinitas tanah                | TIFF       | 1:250.000                    | Alkalinitas, jumlah kandungan natrium (Na) yang dapat ditukar (%), mengindikasikan toksisitas natrium bagi tanaman.                            | RePPRoT/ Harmonized World Soil Database v 2.0 - <https://www.fao.org/soils-portal/data-hub/soil-maps-and-databases/harmonized-world-soil-database-v20/en/>      |
 |        |                                  |            |                              |                                                                                                                                                 | [https://www.fao.org/fileadmin/user_upload/soils/HWSD Viewer/HWSD_RASTER.zip](https://s3.eu-west-1.amazonaws.com/data.gaezdev.aws.fao.org/HWSD/HWSD2_RASTER.zip) |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| 18\.   | Peat depth                       | TIFF       | 1:250.000                    | Thickness of peat                                                                                                                               | Ministry of Agriculture                                                                                                                                          |
-+--------+----------------------------------+------------+------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 18\.   | Kedalaman gambut                 | TIFF       | 1:250.000                    | Ketebalan gambut                                                                                                                                | Kementerian Pertanian                                                                                                                                            |
++--------+----------------------------------+------------+------------------------------+--------------------------------------------------------------------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
-### Example Datasets
+### Data Contoh
 
-Practice data sets used in this module can be accessed at **agroforestri.id/lumens-lasem**
+Data latihan yang digunakan dalam modul ini dapat diakses di [lumens.or.id](https://lumens.or.id/unduh/)
 
-### Data Acquisition
+### Akuisisi Data
 
-For this module, input data may be obtained from global or national-level data sources.
-The example dataset for this module, i.e. the crop suitability parameters and intervention lookup table, are obtained from the Ministry of Agriculture’s land suitability technical manual which can be accessed [here](https://repository.pertanian.go.id/items/fecc0ad1-d13b-46f5-add6-8917dcccc7a3).
+Untuk modul ini, data input dapat diperoleh dari sumber data global atau tingkat nasional.
+Data contoh untuk modul ini, yaitu parameter kesesuaian tanaman dan tabel look up intervensi, diperoleh dari pedoman teknis kesesuaian lahan Kementerian Pertanian yang dapat diakses [di sini](https://repository.pertanian.go.id/items/fecc0ad1-d13b-46f5-add6-8917dcccc7a3).
 
-## Outputs
+## Output
 
-### Output Files
+### File Output
 
-After running the analysis, the following files are generated in the selected output directory:
+Setelah menjalankan analisis, file-file berikut akan dihasilkan di direktori output yang dipilih:
 
-| File | Format | Description |
-|------|--------|-------------|
-| `land_suitability.tif` | GeoTIFF | Final suitability raster with S1/S2/S3/N classes |
-| `land_suitability.rds` | RDS | Suitability polygons (sf object) with attributes |
-| `suitability_factors.tif` | GeoTIFF | Individual factor classification maps (multi-layer) |
-| `soil_climate_factors.rds` | RDS | Harmonised input rasters (terra::wrap format) |
-| `suitability_lookup.csv` | CSV | Lookup table mapping ID to parameter names |
-| `LaSEM_report.html` | HTML | Comprehensive analysis report with static maps |
-| `raster_inputs.csv` | CSV | Copy of uploaded raster inputs |
-| `crop_suitability.csv` | CSV | Copy of uploaded crop suitability parameters |
-| `intervention.csv` | CSV | Copy of uploaded intervention lookup table |
+| File | Format | Deskripsi |
+|------|--------|-----------|
+| `land_suitability.tif` | GeoTIFF | Raster kesesuaian akhir dengan kelas S1/S2/S3/N |
+| `land_suitability.rds` | RDS | Poligon kesesuaian (objek sf) dengan atribut |
+| `suitability_factors.tif` | GeoTIFF | Peta klasifikasi per faktor individual (multilapis) |
+| `soil_climate_factors.rds` | RDS | Input raster yang telah diharmonisasi (format terra::wrap) |
+| `suitability_lookup.csv` | CSV | Tabel look up yang memetakan ID ke nama parameter |
+| `LaSEM_report.html` | HTML | Laporan analisis komprehensif dengan peta statis |
+| `raster_inputs.csv` | CSV | Salinan input raster yang diunggah |
+| `crop_suitability.csv` | CSV | Salinan parameter kesesuaian tanaman yang diunggah |
+| `intervention.csv` | CSV | Salinan tabel look up intervensi yang diunggah |
 
-All raster outputs use the same coordinate reference system and extent as the input rasters. The polygon output (`land_suitability.rds`) is projected to WGS84 (EPSG:4326) for web mapping compatibility.
+Seluruh output raster menggunakan sistem koordinat referensi dan ekstensi yang sama dengan input raster. Output poligon (`land_suitability.rds`) diproyeksikan ke WGS84 (EPSG:4326) untuk kompatibilitas pemetaan web.
 
-### Report Interpretation
+### Interpretasi Laporan
 
-The LaSEM module report consists of 6 main sections, namely: Intro; Crop environmental requirements; Agrocllimatic, soil and terrain conditions; Crop suitability map; Land suitability according to each climate or edaphic factor; and Land suitability improvements.
+Laporan modul LaSEM terdiri dari 6 bagian utama, yaitu: Pendahuluan; Persyaratan lingkungan tanaman; Kondisi agroklimatik, tanah, dan bentang lahan; Peta kesesuaian tanaman; Kesesuaian lahan menurut setiap faktor iklim atau edafik; serta Peningkatan kesesuaian lahan.
 
-**Section 1: Intro**
+**Bagian 1: Pendahuluan**
 
-Here you will find a brief explanation of the module, followed by details of the crop you wish to analyze.
+Di sini Anda akan menemukan penjelasan singkat mengenai modul, diikuti dengan rincian tanaman yang ingin dianalisis.
 
-**Section 2: Crop environmental requirements**
+**Bagian 2: Persyaratan lingkungan tanaman**
 
-This section will display the crop parameters used to run the module.
+Bagian ini akan menampilkan parameter tanaman yang digunakan untuk menjalankan modul.
 
-**Section 3: Agroclimatic, soil and terrain conditions**
+**Bagian 3: Kondisi agroklimatik, tanah, dan bentang lahan**
 
-You will find list of available agroclimatic, soil and terrain data used in this module followed by a display of each parameter in spatial form.
-Pixels darker in color indicate lower values, while lighter colors indicate higher values.
+Anda akan menemukan daftar data agroklimatik, tanah, dan bentang lahan yang tersedia yang digunakan dalam modul ini, diikuti dengan tampilan setiap parameter dalam bentuk spasial.
+Piksel dengan warna lebih gelap menunjukkan nilai lebih rendah, sementara warna lebih terang menunjukkan nilai lebih tinggi.
 
-**Section 4: Crop suitability map**
+**Bagian 4: Peta kesesuaian tanaman**
 
-In this section, users will find a map that shows the land suitability for your chosen crop.
-Users may choose, on the top right-hand corner of the map, the type of suitability map based on the different kinds of analysis: actual suitability, low intervention suitability, medium intervention suitability, and high intervention suitability.
+Pada bagian ini, pengguna akan menemukan peta yang menunjukkan kesesuaian lahan untuk tanaman yang dipilih.
+Pengguna dapat memilih, di pojok kanan atas peta, jenis peta kesesuaian berdasarkan berbagai jenis analisis: kesesuaian aktual, kesesuaian intervensi rendah, kesesuaian intervensi sedang, dan kesesuaian intervensi tinggi.
 
-The different colors of the map indicate the level of suitability for the given crop.
+Warna-warna berbeda pada peta menunjukkan tingkat kesesuaian untuk tanaman yang diberikan.
 
--   **Red** indicates no suitability for the crop, labelled 'N'.
+-   **Merah** menunjukkan tidak sesuai untuk tanaman, berlabel 'N'.
 
--   **Orange** indicates low suitability, labelled 'S3'.
+-   **Oranye** menunjukkan kesesuaian rendah, berlabel 'S3'.
 
--   **Light green** indicates medium suitability, labelled 'S2'.
+-   **Hijau muda** menunjukkan kesesuaian sedang, berlabel 'S2'.
 
--   **Dark green** indicates high suitability, labelled 'S1'.
+-   **Hijau tua** menunjukkan kesesuaian tinggi, berlabel 'S1'.
 
-For each intervention map, crop suitability shifts based on the level of intervention implemented.
-As interventions increase, more land becomes suitable for crop growth.
+Untuk setiap peta intervensi, kesesuaian tanaman bergeser berdasarkan tingkat intervensi yang diterapkan.
+Seiring dengan bertambahnya intervensi, semakin banyak lahan yang menjadi sesuai untuk pertumbuhan tanaman.
 
-**Section 5: Land suitability according to each climate or edaphic factor**
+**Bagian 5: Kesesuaian lahan menurut setiap faktor iklim atau edafik**
 
-This section displays small-multiples maps showing the individual suitability classification (S1/S2/S3/N) for each biophysical factor. This is useful for identifying which specific parameters are limiting in different areas of the study region.
+Bagian ini menampilkan peta small-multiples yang menunjukkan klasifikasi kesesuaian individual (S1/S2/S3/N) untuk setiap faktor biofisik. Hal ini berguna untuk mengidentifikasi parameter spesifik mana yang bersifat pembatas di berbagai area daerah studi.
 
-**Section 6: Land suitability improvements**
+**Bagian 6: Peningkatan kesesuaian lahan**
 
-Based on the crop suitability analysis, this last section shows the extent that each land parameter can be improved through management interventions in tabular form. The more '+' signs, the more effort is needed to reach a higher level of intervention.
+Berdasarkan analisis kesesuaian tanaman, bagian terakhir ini menunjukkan sejauh mana setiap parameter lahan dapat ditingkatkan melalui intervensi manajemen dalam bentuk tabel. Semakin banyak tanda '+', semakin besar upaya yang diperlukan untuk mencapai tingkat intervensi yang lebih tinggi.
 
-### Example Datasets
+### Data Contoh
 
-Example datasets for Bone Regency, South Sulawesi are provided for three commodities: maize (Zea mays), cacao (Theobroma cacao), and arabica coffee (Coffea arabica).
+Data contoh untuk Kabupaten Bone, Sulawesi Selatan disediakan untuk tiga komoditas: jagung (*Zea mays*), kakao (*Theobroma cacao*), dan kopi arabika (*Coffea arabica*).
 
-**Maize (Jagung) Suitability Example**
+**Contoh Kesesuaian Jagung**
 
-The maize example uses 18 biophysical raster layers (climate, soil, terrain) and evaluates suitability based on Ministry of Agriculture technical guidelines. Key limiting factors for maize in Bone Regency typically include soil texture, soil depth, and precipitation patterns.
+Contoh jagung menggunakan 18 lapisan raster biofisik (iklim, tanah, bentang lahan) dan mengevaluasi kesesuaian berdasarkan pedoman teknis Kementerian Pertanian. Faktor pembatas utama untuk jagung di Kabupaten Bone biasanya meliputi tekstur tanah, kedalaman tanah, dan pola presipitasi.
 
-To run the maize example:
+Untuk menjalankan contoh jagung:
 
-1. Load `crop_suitability_spatial_input.csv` as the raster inputs table
-2. Load `land_suitability_parameters_maize.csv` as the crop suitability parameters
-3. Load `lookup_intervention.csv` as the intervention lookup table
-4. Select an output directory and run the analysis
+1. Muat `crop_suitability_spatial_input.csv` sebagai tabel input raster
+2. Muat `land_suitability_parameters_maize.csv` sebagai parameter kesesuaian tanaman
+3. Muat `lookup_intervention.csv` sebagai tabel look up intervensi
+4. Pilih direktori output dan jalankan analisis
 
-**Cacao Suitability Example**
+**Contoh Kesesuaian Kakao**
 
-The cacao example demonstrates suitability evaluation for a perennial crop with different environmental requirements. Cacao is more sensitive to temperature ranges and soil drainage compared to maize.
+Contoh kakao menunjukkan evaluasi kesesuaian untuk tanaman tahunan dengan persyaratan lingkungan yang berbeda. Kakao lebih sensitif terhadap rentang temperatur dan drainase tanah dibandingkan dengan jagung.
 
-To run the cacao example:
+Untuk menjalankan contoh kakao:
 
-1. Load the same `crop_suitability_spatial_input.csv` raster inputs table
-2. Load `land_suitability_parameters_cacao.csv` as the crop suitability parameters
-3. Load `lookup_intervention.csv` as the intervention lookup table
-4. Select an output directory and run the analysis
+1. Muat tabel input raster yang sama `crop_suitability_spatial_input.csv`
+2. Muat `land_suitability_parameters_cacao.csv` sebagai parameter kesesuaian tanaman
+3. Muat `lookup_intervention.csv` sebagai tabel look up intervensi
+4. Pilih direktori output dan jalankan analisis
 
-Note that the same raster inputs can be reused across different commodities - only the crop suitability parameters and intervention tables need to be swapped. This supports comparative multi-commodity analysis planned for LaSEM v1.2.
+Perlu dicatat bahwa input raster yang sama dapat digunakan kembali untuk berbagai komoditas - hanya parameter kesesuaian tanaman dan tabel intervensi yang perlu diganti. Hal ini mendukung analisis multi-komoditas komparatif yang direncanakan untuk LaSEM v1.2.
 
-## Theoretical Background
+## Latar Belakang Teori
 
-### Model Description
+### Deskripsi Model
 
-Ensuring food security relies heavily on the availability of sustainable lands for agriculture.
-As lands pressures to land increases, such as the growing impact of climate change towards the conditions of the land and cultivation practices, trade policies, and population growth, the need for finding suitable land for sustainable agriculture production becomes very important (Jaisli, 2018).
+Menjamin ketahanan pangan sangat bergantung pada ketersediaan lahan berkelanjutan untuk pertanian.
+Seiring dengan meningkatnya tekanan terhadap lahan, seperti dampak perubahan iklim terhadap kondisi lahan dan praktik budidaya, kebijakan perdagangan, serta pertumbuhan populasi, kebutuhan untuk menemukan lahan yang sesuai untuk produksi pertanian berkelanjutan menjadi sangat penting (Jaisli, 2018).
 
-The LaSEM module looks into biophysical factors to evaluate and provide spatially explicit recommendations based on the suitability of certain crop growth at a chosen study area.
-Using global and regional data, the model evaluates specific crop growth parameters with the biophysical conditions of the study area.
-The model concludes by producing a suitability map, potential suitability map and limitation map based on the analysis results.
+Modul LaSEM mengkaji faktor-faktor biofisik untuk mengevaluasi dan memberikan rekomendasi spasial yang eksplisit berdasarkan kesesuaian pertumbuhan tanaman tertentu di daerah studi yang dipilih.
+Dengan menggunakan data global dan regional, model mengevaluasi parameter pertumbuhan tanaman spesifik dengan kondisi biofisik daerah studi.
+Model menyimpulkan dengan menghasilkan peta kesesuaian, peta kesesuaian potensial, dan peta pembatasan berdasarkan hasil analisis.
 
-Insights from these maps and diagram could provide valuable information for policymakers, for instance:
+Wawasan dari peta-peta dan diagram ini dapat memberikan informasi berharga bagi pengambil kebijakan, antara lain:
 
--   **Identify areas with the lowest and highest suitability for a particular crop as well as the limiting factors that most influences the suitability.** While a crop may grow in almost all areas within a land, but some areas may be more productive and produce higher quality crop.
-    Identifying the areas with lowest crop suitability and its limiting factor provides useful information for policymakers to adjust crop policies, for example disburse seed and fertilizers into targeted areas with lower crop suitability.
+-   **Mengidentifikasi area dengan kesesuaian terendah dan tertinggi untuk suatu tanaman tertentu serta faktor pembatas yang paling memengaruhi kesesuaian.** Meskipun suatu tanaman dapat tumbuh di hampir seluruh area dalam suatu lahan, namun beberapa area mungkin lebih produktif dan menghasilkan tanaman dengan kualitas lebih tinggi.
+    Mengidentifikasi area dengan kesesuaian tanaman terendah dan faktor pembatasnya memberikan informasi yang berguna bagi pengambil kebijakan untuk menyesuaikan kebijakan tanaman, misalnya mendistribusikan benih dan pupuk ke area yang ditargetkan dengan kesesuaian tanaman lebih rendah.
 
--   **Input for local crop masterplan, regional planning and agricultural investments.** This module can identify areas that have the highest suitability based on its biophysical characteristics.
-    Combining the results with regional spatial plans may be developed into strategic planning with evidence-based analysis and investment plans which maximizes on the potentials of a given area.
+-   **Masukan untuk rencana induk tanaman lokal, perencanaan regional, dan investasi pertanian.** Modul ini dapat mengidentifikasi area yang memiliki kesesuaian tertinggi berdasarkan karakteristik biofisiknya.
+    Menggabungkan hasil dengan rencana tata ruang regional dapat dikembangkan menjadi perencanaan strategis dengan analisis berbasis bukti dan rencana investasi yang memaksimalkan potensi suatu daerah.
 
-### Key Assumptions
+### Asumsi Utama
 
-In this analysis, it is assumed that according to Liebig's law of the minimum, the factor that is at the most limiting level will determine the final suitability level. This is known as the **Maximum Limitation Method (MLM)**.
+Dalam analisis ini, diasumsikan bahwa sesuai dengan hukum minimum Liebig, faktor yang berada pada tingkat pembatas paling rendah akan menentukan tingkat kesesuaian akhir. Hal ini dikenal sebagai **Metode Pembatas Maksimum (Maximum Limitation Method / MLM)**.
 
-The method works as follows:
+Metode ini bekerja sebagai berikut:
 
-1. Each biophysical parameter (temperature, precipitation, soil pH, etc.) is reclassified into suitability classes (S1, S2, S3, N) based on crop-specific thresholds.
-2. For each pixel, the factor with the lowest suitability class (most limiting) determines the final suitability.
-3. If any parameter rates a pixel as N (Not Suitable), the overall suitability is N regardless of other favorable conditions.
+1. Setiap parameter biofisik (temperatur, presipitasi, pH tanah, dan sebagainya) diklasifikasikan ke dalam kelas kesesuaian (S1, S2, S3, N) berdasarkan ambang batas spesifik tanaman.
+2. Untuk setiap piksel, faktor dengan kelas kesesuaian terendah (paling pembatas) menentukan kesesuaian akhir.
+3. Jika ada parameter yang menilai suatu piksel sebagai N (Tidak Sesuai), kesesuaian keseluruhan adalah N terlepas dari kondisi lain yang menguntungkan.
 
-**Intervention scenarios** are calculated by assuming management can improve certain factors by 1-3 suitability classes, based on the intervention lookup table. Factors marked as non-intervenable cannot be improved regardless of management level.
+**Skenario intervensi** dihitung dengan mengasumsikan bahwa manajemen dapat meningkatkan faktor-faktor tertentu sebesar 1-3 kelas kesesuaian, berdasarkan tabel look up intervensi. Faktor yang ditandai sebagai tidak dapat diintervensi tidak dapat ditingkatkan terlepas dari tingkat manajemen.
 
-### Limitations
+### Keterbatasan
 
--   Lack of easily accessible, up-to-date and accurate data input for a geographic scale of 1:50,000.
-    The land suitability map in this poster was produced using climate and soil condition maps from the global level, i.e., SoilGrids 2.0 and Worldclim 2.0​
+-   Kurangnya data input yang mudah diakses, mutakhir, dan akurat untuk skala geografis 1:50.000.
+    Peta kesesuaian lahan dalam dokumen ini dihasilkan dengan menggunakan peta kondisi iklim dan tanah dari tingkat global, yaitu SoilGrids 2.0 dan Worldclim 2.0.
 
--   Social and economic indicators have not been accommodated in the criteria for assessing land suitability.​
+-   Indikator sosial dan ekonomi belum diakomodasi dalam kriteria penilaian kesesuaian lahan.
 
--   The categorical approach ignores aspects of uncertainty in the data and the interrelationships between biophysical factors that make up suitability.​
+-   Pendekatan kategorikal mengabaikan aspek ketidakpastian dalam data serta hubungan timbal balik antarfaktor biofisik yang membentuk kesesuaian.
 
--   The output is semi-quantitative, not enough to show land productivity in terms of weight for each unit of land.​
+-   Output bersifat semi-kuantitatif, tidak cukup untuk menunjukkan produktivitas lahan dalam satuan berat untuk setiap unit lahan.
 
--   The module cannot consider the potential impact of extreme weather.
+-   Modul ini tidak dapat mempertimbangkan dampak potensial cuaca ekstrem.
 
-## References
+## Referensi
 
-Jaisli, I., Laube, P., Trachsel, S., Ochsner, P., & Schuhmacher, S.
-(2018).
-Suitability evaluation system for the production and sourcing of agricultural commodities.
-Computers and Electronics in Agriculture.
-doi:10.1016/j.compag.2018.02.002
+1.  FAO (1976). *A framework for land evaluation*. FAO Soils Bulletin 32. Rome: Food and Agriculture Organization of the United Nations.
+
+2.  FAO (2007). *Land evaluation: towards a revised framework*. Land and Water Discussion Paper 6. Rome: Food and Agriculture Organization of the United Nations.
+
+3.  Sys, C., Van Ranst, E., Debaveye, J., & Beernaert, F. (1991). *Land Evaluation Part III: Crop requirements*. Agricultural Publications No. 7. Brussels: General Administration for Development Cooperation.
+
+4.  Rossiter, D. G. (1996). A theoretical framework for land evaluation. *Geoderma*, 72(3-4), 163-190. doi:10.1016/S0016-7061(96)00031-6
+
+5.  Ritung, S., Nugroho, K., Mulyani, A., & Suryani, E. (2011). *Petunjuk Teknis Evaluasi Lahan Untuk Komoditas Pertanian (Edisi Revisi)*. Balai Besar Penelitian dan Pengembangan Sumberdaya Lahan Pertanian, Bogor.
+
+6.  Wahyunto, Hikmatullah, Suryani, E., Tafakresnanto, C., Ritung, S., Mulyani, A., Sukarman, Nugroho, K., Sulaeman, Y., Apriyana, Y., Suciantini, E., Pramudia, A., Suparto, Subandiono, R. E., Sutriadi, T., & Nursyamsi, D. (2016). *Petunjuk Teknis Pedoman Penilaian Kesesuaian Lahan untuk Komoditas Pertanian Strategis Tingkat Semi Detail Skala 1:50.000*. Balai Besar Penelitian dan Pengembangan Sumberdaya Lahan Pertanian, Bogor.
+
+7.  Malczewski, J. (2006). GIS-based multicriteria decision analysis: a survey of the literature. *International Journal of Geographical Information Science*, 20(3), 249-268. doi:10.1080/13658810500261082
+
+8.  Jaisli, I., Laube, P., Trachsel, S., Ochsner, P., & Schuhmacher, S. (2018). Suitability evaluation system for the production and sourcing of agricultural commodities. *Computers and Electronics in Agriculture*, 154, 111-121. doi:10.1016/j.compag.2018.02.002
+
+9.  Elsheikh, R., Shariff, A. R. B. M., Amiri, F., Ahmad, N. B., Balasundram, S. K., & Soom, M. A. M. (2013). Agriculture Land Suitability Evaluator (ALSE): A decision and planning support tool for tropical and subtropical crops. *Computers and Electronics in Agriculture*, 93, 98-110. doi:10.1016/j.compag.2013.02.003
